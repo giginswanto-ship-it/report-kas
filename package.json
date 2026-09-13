@@ -1,0 +1,20 @@
+{
+  "name": "pembaca-rekapitulasi-uang-tunai",
+  "version": "1.0.0",
+  "description": "Program Pembaca & Analisis Rekapitulasi Kas & Omset Bengkel dari Folder UANG TUNAI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "baca": "node baca-rekap.js",
+    "cli": "node baca-rekap.js"
+  },
+  "keywords": [
+    "rekapitulasi",
+    "kas-bengkel",
+    "shop-and-drive",
+    "bima-motor",
+    "uang-tunai"
+  ],
+  "author": "Shop & Drive / Bima Motor",
+  "license": "MIT"
+}

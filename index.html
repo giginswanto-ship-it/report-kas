@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEMBACA REKAPITULASI KAS BENGKEL - Shop & Drive & Bima Motor</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- html2pdf.js for Direct PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- TOP HEADER / NAVBAR -->
+  <header class="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white shadow-xl sticky top-0 z-30 border-b border-blue-800/40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-2xl bg-amber-400 flex items-center justify-center text-blue-950 font-black text-xl shadow-lg shadow-amber-400/20">
+          <i class="fa-solid fa-chart-pie"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-black tracking-tight text-white uppercase">
+              PEMBACA REKAPITULASI KAS BENGKEL
+            </h1>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-blue-200 mt-0.5">
+            <span class="px-2 py-0.5 rounded-full bg-blue-800/80 text-amber-300 font-bold border border-blue-700">Shop & Drive</span>
+            <span class="text-slate-400">•</span>
+            <span class="px-2 py-0.5 rounded-full bg-indigo-800/80 text-emerald-300 font-bold border border-indigo-700">Bima Motor</span>
+            <span class="text-slate-400">•</span>
+            <span id="dbLiveBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-500/40">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Folder Reader
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-2.5 text-xs flex-wrap">
+        <!-- Target Folder Badge -->
+        <div class="hidden lg:flex items-center bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/15 text-slate-200">
+          <i class="fa-solid fa-folder-open text-amber-400 mr-2"></i>
+          <span id="statusTargetFolder" class="max-w-[200px] truncate text-[11px]">Folder UANG TUNAI</span>
+        </div>
+
+        <a href="mobile.html" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow-md shadow-emerald-950/20 border border-emerald-400/30">
+          <i class="fa-solid fa-mobile-screen text-amber-300"></i>
+          <span>Mode Mobile</span>
+        </a>
+        <button id="btnReloadData" class="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700" title="Muat Ulang / Sinkronisasi Data">
+          <i class="fa-solid fa-arrows-rotate text-blue-400"></i>
+          <span class="hidden sm:inline">Sinkron Data</span>
+        </button>
+
+        <button id="btnImportModal" class="bg-indigo-700 hover:bg-indigo-600 text-white px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow-md shadow-indigo-950/30 border border-indigo-500/30">
+          <i class="fa-solid fa-file-import text-amber-300"></i>
+          <span>Import File</span>
+        </button>
+
+        <button id="btnExportExcel" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow-md shadow-emerald-700/20">
+          <i class="fa-solid fa-file-excel"></i>
+          <span class="hidden sm:inline">Ekspor</span> Excel
+        </button>
+
+        <button id="btnDownloadPdf" class="bg-rose-700 hover:bg-rose-600 text-white px-3.5 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow-md shadow-rose-950/20">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>Unduh PDF</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- FILTER & CONTROL SECTION -->
+    <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-3.5 no-print">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">
+            <i class="fa-solid fa-filter"></i>
+          </div>
+          <span class="text-xs font-black uppercase tracking-wider text-slate-700">Filter & Rentang Rekapitulasi</span>
+          <span id="recordCountBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+            0 Transaksi
+          </span>
+        </div>
+
+        <!-- Quick Filter Buttons -->
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button type="button" data-filter="all" class="filter-date-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-sm">
+            Semua Waktu
+          </button>
+          <button type="button" data-filter="today" class="filter-date-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+            Hari Ini
+          </button>
+          <button type="button" data-filter="7days" class="filter-date-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+            7 Hari Terakhir
+          </button>
+          <button type="button" data-filter="this_month" class="filter-date-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+            Bulan Ini
+          </button>
+          <button type="button" data-filter="last_month" class="filter-date-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+            Bulan Lalu
+          </button>
+          <button type="button" data-filter="custom" class="filter-date-btn px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <i class="fa-regular fa-calendar-days mr-1"></i> Rentang Khusus
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+        <!-- Search -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+          <input type="text" id="inputSearchRekap" placeholder="Cari tanggal, kasir, bon, catatan..." 
+            class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+        </div>
+
+        <!-- Filter Kasir -->
+        <div>
+          <select id="selectKasir" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+            <option value="all">Semua Kasir & Shift</option>
+          </select>
+        </div>
+
+        <!-- Filter Status Selisih -->
+        <div>
+          <select id="selectStatusSelisih" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+            <option value="all">Semua Status Selisih Fisik</option>
+            <option value="pas">✓ Pas (Sesuai Rp 0)</option>
+            <option value="lebih">+ Lebih (Surplus)</option>
+            <option value="kurang">- Kurang (Defisit)</option>
+          </select>
+        </div>
+
+        <!-- Custom Date Range (hidden by default) -->
+        <div id="customRangeContainer" class="hidden sm:col-span-2 lg:col-span-1 flex items-center gap-2">
+          <input type="date" id="customStartDate" class="w-1/2 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-1 focus:ring-blue-500 outline-none">
+          <span class="text-xs text-slate-400 font-bold">s/d</span>
+          <input type="date" id="customEndDate" class="w-1/2 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-1 focus:ring-blue-500 outline-none">
+        </div>
+      </div>
+    </section>
+
+    <!-- EXECUTIVE KPI METRICS CARDS -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3.5">
+      
+      <!-- Card 1: JUMLAH FISIK RIIL (UANG FISIK DI LACI) -->
+      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg relative overflow-hidden border border-emerald-400/40 ring-1 ring-emerald-500/30">
+        <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-emerald-400/10 rounded-full pointer-events-none"></div>
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300">Jumlah Fisik Riil (Uang Laci)</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-bold border border-emerald-400/40">Kas Fisik</span>
+            </div>
+            <div class="text-2xl sm:text-3xl font-black mt-1 text-white tracking-tight" id="kpiFisikRiil">Rp 0</div>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xl border border-emerald-400/40 shadow-inner">
+            <i class="fa-solid fa-money-bill-wave"></i>
+          </div>
+        </div>
+        <div class="mt-3 pt-3 border-t border-white/15 flex justify-between items-center text-[11px]">
+          <div>
+            <span class="text-slate-300 font-medium">Sisa Kas Buku:</span>
+            <span id="kpiSisaKas" class="font-bold text-white ml-1">Rp 0</span>
+          </div>
+          <div>
+            <span class="text-slate-300 font-medium">Total Bon Ops:</span>
+            <span id="kpiBiayaOpsAlt" class="font-bold text-rose-300 ml-1">Rp 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Total Omset Keseluruhan -->
+      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-blue-900 to-indigo-900 text-white rounded-2xl p-4 shadow-md relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-white/5 rounded-full pointer-events-none"></div>
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-200">Total Pemasukan (Omset)</span>
+            <div class="text-2xl sm:text-3xl font-black mt-1 text-white tracking-tight" id="kpiTotalOmset">Rp 0</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-amber-300 text-lg">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+        </div>
+        <div class="mt-3 pt-3 border-t border-white/15 grid grid-cols-2 gap-2 text-[11px]">
+          <div>
+            <span class="text-amber-300 font-semibold block">Shop & Drive</span>
+            <span id="kpiPorsiShopDrive" class="font-bold text-white">Rp 0 (0%)</span>
+          </div>
+          <div>
+            <span class="text-emerald-300 font-semibold block">Bima Motor</span>
+            <span id="kpiPorsiBimaMotor" class="font-bold text-white">Rp 0 (0%)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Shop & Drive -->
+      <div class="kpi-card bg-white rounded-2xl p-4 border border-amber-100 shadow-sm flex flex-col justify-between">
+        <div class="flex justify-between items-center text-slate-500 mb-1">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Shop & Drive</span>
+          <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-car"></i>
+          </span>
+        </div>
+        <div class="text-xl font-black text-amber-600 tracking-tight" id="kpiShopDriveAmount">Rp 0</div>
+        <div class="text-[10px] text-slate-400 mt-1 font-semibold" id="kpiShopDrivePct">0% Dari Total</div>
+      </div>
+
+      <!-- Card 4: Bima Motor -->
+      <div class="kpi-card bg-white rounded-2xl p-4 border border-blue-100 shadow-sm flex flex-col justify-between">
+        <div class="flex justify-between items-center text-slate-500 mb-1">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Bima Motor</span>
+          <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-motorcycle"></i>
+          </span>
+        </div>
+        <div class="text-xl font-black text-blue-700 tracking-tight" id="kpiBimaMotorAmount">Rp 0</div>
+        <div class="text-[10px] text-slate-400 mt-1 font-semibold" id="kpiBimaMotorPct">0% Dari Total</div>
+      </div>
+
+      <!-- Card 5: Selisih & Akurasi -->
+      <div class="kpi-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="flex justify-between items-center text-slate-500 mb-1">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700">Audit Selisih</span>
+          <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </span>
+        </div>
+        <div class="text-xl font-black text-emerald-600 tracking-tight" id="kpiSelisih">Rp 0</div>
+        <div class="text-[10px] text-slate-500 mt-1 font-semibold" id="kpiAccuracyBadge">100% Shift Pas</div>
+      </div>
+
+    </section>
+
+    <!-- VISUAL CHARTS SECTION -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 no-print">
+      
+      <!-- Chart 1: Daily Revenue Trend -->
+      <div class="lg:col-span-2 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-black uppercase tracking-wider text-slate-800">Tren Pemasukan Harian</h2>
+              <p class="text-[11px] text-slate-400">Komparasi Penjualan Shop & Drive vs Bima Motor</p>
+            </div>
+          </div>
+          <div class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+            Rata-rata: <span id="kpiAvgDaily" class="text-slate-800">Rp 0</span> / hari
+          </div>
+        </div>
+        <div class="h-64 w-full relative">
+          <canvas id="chartRevenueTrend"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2 & 3: Breakdown Tabs & Charts -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-pie-chart"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-black uppercase tracking-wider text-slate-800">Komposisi Kas & Non-Tunai</h2>
+              <p class="text-[11px] text-slate-400">Distribusi Transaksi</p>
+            </div>
+          </div>
+          <div class="h-44 w-full relative">
+            <canvas id="chartPaymentBreakdown"></canvas>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-slate-100">
+          <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider block mb-1">Top Pengeluaran Bon Ops</span>
+          <div class="h-24 w-full relative">
+            <canvas id="chartExpenseTop"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB NAVIGATION & MAIN DATA TABLES -->
+    <section class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      
+      <!-- Tab Bar -->
+      <div class="bg-slate-50 border-b border-slate-200/80 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 no-print">
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button type="button" data-target="tabPaneRekap" class="tab-btn active px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+            <i class="fa-solid fa-table-list"></i>
+            <span>Rekapitulasi Harian</span>
+          </button>
+          <button type="button" data-target="tabPaneComparison" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200 transition flex items-center gap-2">
+            <i class="fa-solid fa-scale-unbalanced-flip text-amber-500"></i>
+            <span>Analisis Komparasi Omset</span>
+          </button>
+          <button type="button" data-target="tabPaneExpenses" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200 transition flex items-center gap-2">
+            <i class="fa-solid fa-receipt text-rose-500"></i>
+            <span>Rekap Bon Operasional</span>
+          </button>
+          <button type="button" data-target="tabPaneSourceInfo" class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200 transition flex items-center gap-2">
+            <i class="fa-solid fa-folder text-blue-500"></i>
+            <span>File Sumber UANG TUNAI</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="btnPrintReport" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-print"></i> Cetak Laporan
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 1: REKAPITULASI TABLE PANE -->
+      <div id="tabPaneRekap" class="tab-pane p-0">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-100/70 border-b border-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider">
+                <th class="py-3 px-4">Tanggal</th>
+                <th class="py-3 px-4">Kasir / Shift</th>
+                <th class="py-3 px-4 text-right">Shop & Drive</th>
+                <th class="py-3 px-4 text-right">Bima Motor</th>
+                <th class="py-3 px-4 text-right bg-slate-200/50">Total Omset</th>
+                <th class="py-3 px-4 text-right">Biaya Ops</th>
+                <th class="py-3 px-4 text-right">Sisa Kas</th>
+                <th class="py-3 px-4 text-right">Fisik Riil</th>
+                <th class="py-3 px-4 text-center">Status Audit</th>
+                <th class="py-3 px-4 text-center no-print">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tableRekapBody" class="divide-y divide-slate-100">
+              <!-- Rendered Dynamically -->
+            </tbody>
+            <tfoot id="tableRekapFoot" class="bg-slate-100/90 font-black text-slate-900 text-xs border-t-2 border-slate-300">
+              <!-- Dynamic Summary Row -->
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: COMPARISON PANE -->
+      <div id="tabPaneComparison" class="tab-pane hidden p-5 space-y-6">
+        <div class="max-w-3xl mx-auto space-y-6">
+          <div class="text-center">
+            <h2 class="text-base font-black text-slate-900">Perbandingan Kinerja Penjualan</h2>
+            <p class="text-xs text-slate-500">Rasio kontribusi pemasukan antara Shop & Drive dan Bima Motor</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 text-center">
+              <span class="text-xs font-bold text-amber-800 uppercase">Shop & Drive</span>
+              <div class="text-2xl font-black text-amber-600 mt-1" id="compTotalSD">Rp 0</div>
+              <span class="text-xs font-semibold text-amber-700 mt-1 block" id="compPctSD">0%</span>
+              <div class="w-full bg-amber-200/60 h-2.5 rounded-full mt-3 overflow-hidden">
+                <div id="compProgressBarSD" class="bg-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 text-center">
+              <span class="text-xs font-bold text-blue-800 uppercase">Bima Motor</span>
+              <div class="text-2xl font-black text-blue-700 mt-1" id="compTotalBM">Rp 0</div>
+              <span class="text-xs font-semibold text-blue-700 mt-1 block" id="compPctBM">0%</span>
+              <div class="w-full bg-blue-200/60 h-2.5 rounded-full mt-3 overflow-hidden">
+                <div id="compProgressBarBM" class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: EXPENSES PANE -->
+      <div id="tabPaneExpenses" class="tab-pane hidden p-5 space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+          <div>
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-800">Daftar Rincian Bon Pengeluaran Kas Kecil</h2>
+            <p class="text-[11px] text-slate-400">Semua bukti bon pengeluaran operasional yang tercatat di folder UANG TUNAI</p>
+          </div>
+          <div class="text-right">
+            <div class="text-base font-black text-rose-600" id="totalBonExpenses">Rp 0</div>
+            <div class="text-[10px] text-slate-400 font-semibold" id="countBonExpenses">0 Bon</div>
+          </div>
+        </div>
+        <div id="expenseItemsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Rendered Dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB 4: SOURCE INFO PANE -->
+      <div id="tabPaneSourceInfo" class="tab-pane hidden p-5 space-y-4">
+        <div>
+          <h2 class="text-xs font-black uppercase tracking-wider text-slate-800">Informasi Folder & File Terbaca</h2>
+          <p class="text-[11px] text-slate-400">File-file pembukuan yang dipindai dari direktori UANG TUNAI</p>
+        </div>
+        <div id="scannedFilesContainer" class="space-y-2">
+          <!-- Rendered Dynamically -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- DETAIL / BERITA ACARA MODAL -->
+  <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+      
+      <!-- Modal Header -->
+      <div class="p-5 bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex justify-between items-center rounded-t-3xl">
+        <div>
+          <span class="text-[10px] font-black uppercase tracking-wider text-amber-300">Berita Acara Rekapitulasi Kasir</span>
+          <h2 class="text-lg font-black mt-0.5" id="modalTanggal">-</h2>
+          <p class="text-xs text-blue-200" id="modalKasir">Kasir</p>
+        </div>
+        <button id="btnCloseDetailModal" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 space-y-4 text-xs">
+        
+        <!-- Pemasukan Breakdown -->
+        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
+          <span class="font-black text-slate-700 uppercase tracking-wider text-[10px] block">Rincian Pemasukan (Omset)</span>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-600">Saldo Awal Modal Kasir:</span>
+            <span class="font-bold text-slate-800" id="modalSaldoAwal">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-amber-700 font-semibold">Penjualan Shop & Drive:</span>
+            <span class="font-bold text-amber-700" id="modalShopDrive">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-blue-700 font-semibold">Penjualan Bima Motor:</span>
+            <span class="font-bold text-blue-700" id="modalBimaMotor">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-slate-200 font-black">
+            <span class="text-slate-900">Total Pemasukan:</span>
+            <span class="text-emerald-700 text-sm" id="modalTotalPemasukan">Rp 0</span>
+          </div>
+        </div>
+
+        <!-- Pengeluaran Kasir -->
+        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
+          <span class="font-black text-slate-700 uppercase tracking-wider text-[10px] block">Potongan Non-Tunai & Biaya Ops</span>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-600">Transfer Bank Mandiri:</span>
+            <span class="font-bold text-slate-800" id="modalTransferMandiri">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-600">Card / EDC:</span>
+            <span class="font-bold text-slate-800" id="modalCardEdc">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-600">Trade In / Penghematan:</span>
+            <span class="font-bold text-slate-800" id="modalTradeIn">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-rose-600 font-semibold">Biaya Bon Operasional:</span>
+            <span class="font-bold text-rose-600" id="modalBiayaOps">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-slate-200 font-black">
+            <span class="text-slate-900">Total Pengeluaran Kas:</span>
+            <span class="text-rose-700 text-sm" id="modalTotalPengeluaran">Rp 0</span>
+          </div>
+        </div>
+
+        <!-- Rincian Bon List -->
+        <div class="bg-rose-50/50 p-3.5 rounded-2xl border border-rose-100 space-y-2">
+          <span class="font-black text-rose-800 uppercase tracking-wider text-[10px] block">Rincian Bon Kasir</span>
+          <div id="modalExpenseList" class="space-y-1">
+            <!-- Expenses List -->
+          </div>
+        </div>
+
+        <!-- Validasi Fisik & Selisih -->
+        <div class="bg-blue-50/60 p-3.5 rounded-2xl border border-blue-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-slate-700">Sisa Uang di Kas Kecil:</span>
+            <span class="font-black text-slate-900 text-sm" id="modalSisaKasKecil">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-slate-700">Uang Fisik Riil Laci:</span>
+            <span class="font-black text-blue-900 text-sm" id="modalFisikRiil">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-blue-200">
+            <span class="font-black text-slate-900">Selisih Kasir:</span>
+            <span id="modalSelisih" class="font-black text-base">Rp 0</span>
+          </div>
+        </div>
+
+        <!-- Catatan -->
+        <div>
+          <span class="font-bold text-slate-500 text-[10px] uppercase block mb-1">Catatan Tambahan Kasir</span>
+          <div id="modalCatatan" class="p-3 bg-slate-100 rounded-xl text-slate-700 text-[11px] italic">
+            Tidak ada catatan.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- IMPORT FILE MODAL -->
+  <div id="importModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm font-black uppercase tracking-wider text-slate-800">Impor File Rekapitulasi</h2>
+        <button id="btnCloseImportModal" class="text-slate-400 hover:text-slate-600 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500">
+        Unggah file <code>.json</code> database atau <code>.csv</code> rekapitulasi dari folder UANG TUNAI.
+      </p>
+
+      <div id="dropZoneUpload" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-6 text-center cursor-pointer transition bg-slate-50">
+        <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-500 mb-2"></i>
+        <p class="text-xs font-bold text-slate-700">Klik untuk memilih file atau Drag & Drop</p>
+        <p class="text-[10px] text-slate-400 mt-1">Mendukung format JSON dan CSV</p>
+        <input type="file" id="fileInputUpload" accept=".json,.csv" class="hidden">
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none no-print"></div>
+
+  <!-- LOADING SPINNER -->
+  <div id="globalLoadingSpinner" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center hidden no-print">
+    <div class="bg-white p-4 rounded-2xl shadow-xl flex items-center gap-3">
+      <i class="fa-solid fa-circle-notch fa-spin text-blue-600 text-xl"></i>
+      <span class="text-xs font-bold text-slate-700">Memuat data rekapitulasi kas...</span>
+    </div>
+  </div>
+
+  <!-- Application Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>
