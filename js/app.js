@@ -3,6 +3,34 @@
  * Frontend Core Application (Tailwind CSS + Chart.js + Dynamic Analytics)
  */
 
+// Storage Key for Cash Taken Status
+const STORAGE_KEY_CASH_TAKEN = 'rekap_kas_cash_taken_status_v1';
+
+function getCashTakenMap() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_CASH_TAKEN);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function isRecordCashTaken(record) {
+  if (!record) return false;
+  const map = getCashTakenMap();
+  const key = record.id || record.tanggal;
+  return map[key]?.taken === true;
+}
+
+function setRecordCashTaken(recordKey, isTaken) {
+  const map = getCashTakenMap();
+  map[recordKey] = {
+    taken: Boolean(isTaken),
+    updatedAt: new Date().toISOString()
+  };
+  localStorage.setItem(STORAGE_KEY_CASH_TAKEN, JSON.stringify(map));
+}
+
 // Application State
 const state = {
   allRecords: [],
@@ -15,6 +43,7 @@ const state = {
   customEndDate: '',
   cashierFilter: 'all',
   statusFilter: 'all',
+  cashTakenFilter: 'all', // 'all', 'taken', 'not_taken'
   searchQuery: '',
   selectedRecord: null,
   charts: {
@@ -243,6 +272,13 @@ function applyFilters() {
     list = list.filter(r => Number(r.selisih) < 0);
   }
 
+  // Cash Taken Status Filter
+  if (state.cashTakenFilter === 'taken') {
+    list = list.filter(r => isRecordCashTaken(r));
+  } else if (state.cashTakenFilter === 'not_taken') {
+    list = list.filter(r => !isRecordCashTaken(r));
+  }
+
   // Search Query
   if (state.searchQuery.trim()) {
     const q = state.searchQuery.toLowerCase().trim();
@@ -361,24 +397,28 @@ function renderKpiCards() {
   setElText('kpiBimaMotorAmount', utils.formatRupiah(sumBimaMotor));
   setElText('kpiBimaMotorPct', `${porsiBM}% Dari Total`);
 
+  setElText('kpiTransferMandiri', utils.formatRupiah(sumMandiri));
+  setElText('kpiCardEdc', utils.formatRupiah(sumCardEdc));
+  setElText('kpiTradeIn', utils.formatRupiah(sumTradeIn));
+
   setElText('kpiNonTunai', utils.formatRupiah(sumMandiri + sumCardEdc + sumTradeIn));
   setElText('kpiBiayaOps', utils.formatRupiah(sumBiayaOps));
   setElText('kpiBiayaOpsAlt', utils.formatRupiah(sumBiayaOps));
   setElText('kpiPengeluaranKas', utils.formatRupiah(sumPengeluaranKas));
   setElText('kpiSisaKas', utils.formatRupiah(sumSisaKas));
   setElText('kpiFisikRiil', utils.formatRupiah(sumFisikRiil));
-  renderTableFooter(sumShopDrive, sumBimaMotor, sumTotalOmset, sumBiayaOps, sumSisaKas, sumFisikRiil, sumSelisih);
+  renderTableFooter(sumShopDrive, sumBimaMotor, sumTotalOmset, sumMandiri, sumCardEdc, sumTradeIn, sumBiayaOps, sumSisaKas, sumFisikRiil, sumSelisih);
   setElText('kpiAvgDaily', utils.formatRupiah(avgDaily));
 
   const selisihEl = document.getElementById('kpiSelisih');
   if (selisihEl) {
     selisihEl.innerText = utils.formatRupiah(sumSelisih);
     if (sumSelisih === 0) {
-      selisihEl.className = 'text-2xl font-black text-emerald-600';
+      selisihEl.className = 'text-lg sm:text-xl font-black text-emerald-400 tracking-tight mt-1';
     } else if (sumSelisih > 0) {
-      selisihEl.className = 'text-2xl font-black text-blue-600';
+      selisihEl.className = 'text-lg sm:text-xl font-black text-cyan-300 tracking-tight mt-1';
     } else {
-      selisihEl.className = 'text-2xl font-black text-rose-600';
+      selisihEl.className = 'text-lg sm:text-xl font-black text-rose-400 tracking-tight mt-1';
     }
   }
 
@@ -585,7 +625,7 @@ function renderRekapTable() {
   if (state.filteredRecords.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="10" class="text-center py-8 text-slate-400">
+        <td colspan="14" class="text-center py-8 text-slate-400">
           <i class="fa-solid fa-folder-open text-3xl mb-2 block text-slate-300"></i>
           Tidak ada data rekapitulasi yang cocok dengan filter yang dipilih.
         </td>
@@ -597,35 +637,48 @@ function renderRekapTable() {
   state.filteredRecords.forEach((r, idx) => {
     const totalPemasukan = Number(r.totalPemasukan) || (Number(r.penjualanShopDrive) + Number(r.penjualanBimaMotor)) || 0;
     const selisih = Number(r.selisih) || 0;
+    const recordKey = r.id || r.tanggal;
+    const isTaken = isRecordCashTaken(r);
 
     let badgeStatus = '';
     if (selisih === 0) {
-      badgeStatus = `<span class="badge-pas px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1"><i class="fa-solid fa-check"></i> Pas (Rp 0)</span>`;
+      badgeStatus = `<span class="badge-pas px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-0.5"><i class="fa-solid fa-check text-[9px]"></i> Pas (Rp 0)</span>`;
     } else if (selisih > 0) {
-      badgeStatus = `<span class="badge-lebih px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +${utils.formatRupiah(selisih)}</span>`;
+      badgeStatus = `<span class="badge-lebih px-1.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-0.5"><i class="fa-solid fa-arrow-trend-up text-[9px]"></i> +${utils.formatRupiah(selisih)}</span>`;
     } else {
-      badgeStatus = `<span class="badge-kurang px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1"><i class="fa-solid fa-arrow-trend-down"></i> -${utils.formatRupiah(Math.abs(selisih))}</span>`;
+      badgeStatus = `<span class="badge-kurang px-1.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-0.5"><i class="fa-solid fa-arrow-trend-down text-[9px]"></i> -${utils.formatRupiah(Math.abs(selisih))}</span>`;
     }
 
     const tr = document.createElement('tr');
-    tr.className = 'border-b border-slate-100 hover:bg-blue-50/40 transition cursor-pointer';
+    tr.className = 'border-b border-slate-100 hover:bg-blue-50/40 transition cursor-pointer text-[11px]';
     tr.innerHTML = `
-      <td class="py-3.5 px-4 font-semibold text-slate-800 text-xs">${r.tanggal || '-'}</td>
-      <td class="py-3.5 px-4 text-xs">
-        <div class="font-bold text-slate-800">${r.kasir || 'Kasir'}</div>
-        <div class="text-[10px] text-slate-400">${r.sumber || 'Folder UANG TUNAI'}</div>
+      <td class="py-2.5 px-3 font-semibold text-slate-800 whitespace-nowrap">${r.tanggal || '-'}</td>
+      <td class="py-2.5 px-3">
+        <div class="font-bold text-slate-800 whitespace-nowrap">${r.kasir || 'Kasir'}</div>
+        <div class="text-[9px] text-slate-400 whitespace-nowrap">${r.sumber || 'Folder UANG TUNAI'}</div>
       </td>
-      <td class="py-3.5 px-4 text-xs font-bold text-amber-600 text-right">${utils.formatRupiah(r.penjualanShopDrive)}</td>
-      <td class="py-3.5 px-4 text-xs font-bold text-blue-600 text-right">${utils.formatRupiah(r.penjualanBimaMotor)}</td>
-      <td class="py-3.5 px-4 text-xs font-black text-slate-900 text-right bg-slate-50/50">${utils.formatRupiah(totalPemasukan)}</td>
-      <td class="py-3.5 px-4 text-xs font-semibold text-rose-600 text-right">${utils.formatRupiah(r.biayaOperasional)}</td>
-      <td class="py-3.5 px-4 text-xs font-bold text-slate-700 text-right">${utils.formatRupiah(r.sisaUangKasKecil)}</td>
-      <td class="py-3.5 px-4 text-xs font-bold text-slate-900 text-right">${utils.formatRupiah(r.fisikRiil)}</td>
-      <td class="py-3.5 px-4 text-center">${badgeStatus}</td>
-      <td class="py-3.5 px-4 text-center">
-        <button type="button" class="btn-detail-row bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white p-2 rounded-xl transition shadow-sm text-xs font-bold" data-id="${r.id || r.tanggal}" title="Lihat Berita Acara & Bon">
-          <i class="fa-solid fa-eye mr-1"></i> Rincian
+      <td class="py-2.5 px-2 font-bold text-amber-600 text-right whitespace-nowrap">${utils.formatRupiah(r.penjualanShopDrive)}</td>
+      <td class="py-2.5 px-2 font-bold text-blue-600 text-right whitespace-nowrap">${utils.formatRupiah(r.penjualanBimaMotor)}</td>
+      <td class="py-2.5 px-2.5 font-black text-slate-900 text-right bg-slate-50/70 whitespace-nowrap">${utils.formatRupiah(totalPemasukan)}</td>
+      <td class="py-2.5 px-2 font-bold text-blue-700 text-right whitespace-nowrap bg-blue-50/20">${utils.formatRupiah(r.transferMandiri)}</td>
+      <td class="py-2.5 px-2 font-bold text-indigo-700 text-right whitespace-nowrap bg-indigo-50/20">${utils.formatRupiah(r.cardEdc)}</td>
+      <td class="py-2.5 px-2 font-bold text-purple-700 text-right whitespace-nowrap bg-purple-50/20">${utils.formatRupiah(r.penghematanTradeIn)}</td>
+      <td class="py-2.5 px-2 font-semibold text-rose-600 text-right whitespace-nowrap">${utils.formatRupiah(r.biayaOperasional)}</td>
+      <td class="py-2.5 px-2 font-bold text-slate-700 text-right whitespace-nowrap">${utils.formatRupiah(r.sisaUangKasKecil)}</td>
+      <td class="py-2.5 px-2 font-bold text-slate-900 text-right whitespace-nowrap bg-emerald-50/30">${utils.formatRupiah(r.fisikRiil)}</td>
+      <td class="py-2.5 px-2 text-center whitespace-nowrap">${badgeStatus}</td>
+      <td class="py-2.5 px-1.5 text-center no-print whitespace-nowrap">
+        <button type="button" class="btn-detail-row bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white px-2.5 py-1 rounded-lg transition shadow-2xs text-[10px] font-bold inline-flex items-center gap-1" data-id="${recordKey}" title="Lihat Berita Acara & Bon">
+          <i class="fa-solid fa-eye text-[10px]"></i> Rincian
         </button>
+      </td>
+      <td class="py-2.5 px-2.5 text-center whitespace-nowrap">
+        <label class="btn-cash-taken-label inline-flex items-center gap-1.5 cursor-pointer select-none px-2.5 py-1 rounded-lg border transition shadow-2xs ${isTaken ? 'bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}" title="Klik kotak cetrang untuk menandai status uang cash">
+          <input type="checkbox" class="checkbox-cash-taken w-3.5 h-3.5 rounded text-emerald-600 accent-emerald-600 cursor-pointer" data-id="${recordKey}" ${isTaken ? 'checked' : ''}>
+          <span class="text-[10px] font-bold ${isTaken ? 'text-emerald-700' : 'text-slate-500'}">
+            ${isTaken ? '✓ Diambil' : 'Belum'}
+          </span>
+        </label>
       </td>
     `;
 
@@ -635,6 +688,32 @@ function renderRekapTable() {
       openDetailModal(r);
     });
     tr.addEventListener('click', () => openDetailModal(r));
+
+    // Checkbox toggle handler
+    const chk = tr.querySelector('.checkbox-cash-taken');
+    const lbl = tr.querySelector('.btn-cash-taken-label');
+    if (chk) {
+      chk.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      chk.addEventListener('change', (e) => {
+        e.stopPropagation();
+        const newStatus = chk.checked;
+        setRecordCashTaken(recordKey, newStatus);
+        showToast(
+          newStatus
+            ? `✓ Uang Cash tanggal ${r.tanggal || '-'} (${utils.formatRupiah(r.fisikRiil)}) ditandai SUDAH DIAMBIL`
+            : `Uang Cash tanggal ${r.tanggal || '-'} ditandai BELUM DIAMBIL`,
+          newStatus ? 'success' : 'info'
+        );
+        renderApp();
+      });
+    }
+    if (lbl) {
+      lbl.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
 
     tbody.appendChild(tr);
   });
@@ -812,6 +891,41 @@ function openDetailModal(record) {
     }
   }
 
+  // Update Cash Taken status in modal
+  const recordKey = record.id || record.tanggal;
+  const isTaken = isRecordCashTaken(record);
+  const modalCashContainer = document.getElementById('modalCashTakenContainer');
+  const modalCashCheckbox = document.getElementById('modalCashTakenCheckbox');
+  const modalCashText = document.getElementById('modalCashTakenText');
+  const modalCashLabel = document.getElementById('modalCashTakenLabel');
+
+  if (modalCashContainer && modalCashCheckbox && modalCashText && modalCashLabel) {
+    modalCashCheckbox.checked = isTaken;
+    if (isTaken) {
+      modalCashContainer.className = 'p-3.5 rounded-2xl border bg-emerald-50/90 border-emerald-300 text-emerald-900';
+      modalCashLabel.className = 'inline-flex items-center gap-2 cursor-pointer select-none px-3.5 py-1.5 rounded-xl border transition shadow-xs bg-emerald-100 border-emerald-300 text-emerald-800';
+      modalCashText.innerText = '✓ Sudah Diambil';
+    } else {
+      modalCashContainer.className = 'p-3.5 rounded-2xl border bg-slate-50 border-slate-200 text-slate-700';
+      modalCashLabel.className = 'inline-flex items-center gap-2 cursor-pointer select-none px-3.5 py-1.5 rounded-xl border transition shadow-xs bg-white border-slate-300 text-slate-600';
+      modalCashText.innerText = 'Belum Diambil';
+    }
+
+    modalCashCheckbox.onchange = (e) => {
+      const newStatus = e.target.checked;
+      setRecordCashTaken(recordKey, newStatus);
+      showToast(
+        newStatus
+          ? `✓ Status uang cash tanggal ${record.tanggal || '-'} ditandai SUDAH DIAMBIL`
+          : `Status uang cash tanggal ${record.tanggal || '-'} ditandai BELUM DIAMBIL`,
+        newStatus ? 'success' : 'info'
+      );
+      openDetailModal(record);
+      renderRekapTable();
+      renderKpiCards();
+    };
+  }
+
   setElText('modalCatatan', record.catatan || 'Tidak ada catatan serah terima tambahan.');
 
   modal.classList.remove('hidden');
@@ -845,6 +959,7 @@ function exportRekapToExcel() {
     'Sisa Uang di Kas Kecil',
     'Uang Fisik Riil Laci',
     'Selisih Kas',
+    'Status Uang Cash Diambil',
     'Catatan / Rincian Bon'
   ];
 
@@ -855,6 +970,7 @@ function exportRekapToExcel() {
     const totalPengeluaran = Number(r.totalPengeluaranKas) || (Number(r.transferMandiri) + Number(r.cardEdc) + Number(r.penghematanTradeIn) + Number(r.biayaOperasional)) || 0;
     const sisaUang = Number(r.sisaUangKasKecil) || ((Number(r.saldoAwal) + totalPemasukan) - totalPengeluaran) || 0;
     const selisih = Number(r.selisih) || 0;
+    const isTaken = isRecordCashTaken(r);
 
     let notes = r.catatan || '';
     if (r.expenses && Array.isArray(r.expenses) && r.expenses.length > 0) {
@@ -877,6 +993,7 @@ function exportRekapToExcel() {
       sisaUang,
       r.fisikRiil || 0,
       selisih,
+      isTaken ? 'Sudah Diambil' : 'Belum Diambil',
       `"${notes.replace(/"/g, '""')}"`
     ];
 
@@ -899,19 +1016,276 @@ function printReport() {
   window.print();
 }
 
-function downloadReportPdf() {
-  const element = document.getElementById('printableReportArea') || document.body;
-  if (typeof html2pdf !== 'undefined') {
-    const opt = {
-      margin: 10,
-      filename: `Laporan_Rekapitulasi_Kas_Bengkel_${new Date().toISOString().split('T')[0]}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-    };
-    html2pdf().set(opt).from(element).save();
-    showToast('Sedang membuat file PDF...', 'info');
-  } else {
+function buildPrintableReportElement() {
+  const container = document.createElement('div');
+  container.id = 'tempPdfReportContainer';
+  container.style.width = '1120px';
+  container.style.padding = '24px 28px';
+  container.style.background = '#ffffff';
+  container.style.color = '#0f172a';
+  container.style.fontFamily = "'Plus Jakarta Sans', Arial, sans-serif";
+  container.style.fontSize = '11px';
+  container.style.lineHeight = '1.4';
+  container.style.boxSizing = 'border-box';
+
+  // Calculate Aggregates
+  let sumTotalOmset = 0;
+  let sumShopDrive = 0;
+  let sumBimaMotor = 0;
+  let sumMandiri = 0;
+  let sumCardEdc = 0;
+  let sumTradeIn = 0;
+  let sumBiayaOps = 0;
+  let sumSisaKas = 0;
+  let sumFisikRiil = 0;
+  let sumSelisih = 0;
+  let takenCount = 0;
+
+  state.filteredRecords.forEach(r => {
+    const totalPemasukan = Number(r.totalPemasukan) || (Number(r.penjualanShopDrive) + Number(r.penjualanBimaMotor)) || 0;
+    sumTotalOmset += totalPemasukan;
+    sumShopDrive += Number(r.penjualanShopDrive) || 0;
+    sumBimaMotor += Number(r.penjualanBimaMotor) || 0;
+    sumMandiri += Number(r.transferMandiri) || 0;
+    sumCardEdc += Number(r.cardEdc) || 0;
+    sumTradeIn += Number(r.penghematanTradeIn) || 0;
+    sumBiayaOps += Number(r.biayaOperasional) || 0;
+    sumSisaKas += Number(r.sisaUangKasKecil) || 0;
+    sumFisikRiil += Number(r.fisikRiil) || 0;
+    sumSelisih += (Number(r.selisih) || 0);
+    if (isRecordCashTaken(r)) takenCount++;
+  });
+
+  const totalRecords = state.filteredRecords.length;
+  const porsiSD = sumTotalOmset > 0 ? ((sumShopDrive / sumTotalOmset) * 100).toFixed(1) : 0;
+  const porsiBM = sumTotalOmset > 0 ? ((sumBimaMotor / sumTotalOmset) * 100).toFixed(1) : 0;
+  const nonTunaiTotal = sumMandiri + sumCardEdc + sumTradeIn;
+
+  let filterText = 'Semua Periode';
+  if (state.activeFilter === 'today') filterText = 'Hari Ini';
+  else if (state.activeFilter === '7days') filterText = '7 Hari Terakhir';
+  else if (state.activeFilter === 'this_month') filterText = 'Bulan Ini';
+  else if (state.activeFilter === 'last_month') filterText = 'Bulan Lalu';
+  else if (state.activeFilter === 'custom') filterText = `${state.customStartDate || '-'} s/d ${state.customEndDate || '-'}`;
+
+  const printTime = new Date().toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  let rowsHtml = '';
+  state.filteredRecords.forEach((r, idx) => {
+    const totalPemasukan = Number(r.totalPemasukan) || (Number(r.penjualanShopDrive) + Number(r.penjualanBimaMotor)) || 0;
+    const selisih = Number(r.selisih) || 0;
+    const isTaken = isRecordCashTaken(r);
+
+    let selBadge = '';
+    if (selisih === 0) selBadge = '<span style="color: #047857; font-weight: bold;">✓ Pas</span>';
+    else if (selisih > 0) selBadge = `<span style="color: #1d4ed8; font-weight: bold;">+${utils.formatRupiah(selisih)}</span>`;
+    else selBadge = `<span style="color: #b91c1c; font-weight: bold;">-${utils.formatRupiah(Math.abs(selisih))}</span>`;
+
+    const takenBadge = isTaken 
+      ? '<span style="background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;">✓ Sudah Diambil</span>'
+      : '<span style="background: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 4px; font-size: 10px;">Belum Diambil</span>';
+
+    const bgRow = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+
+    rowsHtml += `
+      <tr style="background: ${bgRow}; border-bottom: 1px solid #e2e8f0;">
+        <td style="padding: 5px 6px; font-weight: 600; white-space: nowrap;">${r.tanggal || '-'}</td>
+        <td style="padding: 5px 6px;">
+          <div style="font-weight: bold; color: #1e293b;">${r.kasir || 'Kasir'}</div>
+          <div style="font-size: 8px; color: #64748b;">${r.sumber || 'UANG TUNAI'}</div>
+        </td>
+        <td style="padding: 5px 6px; text-align: right; color: #b45309; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penjualanShopDrive)}</td>
+        <td style="padding: 5px 6px; text-align: right; color: #1d4ed8; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penjualanBimaMotor)}</td>
+        <td style="padding: 5px 6px; text-align: right; font-weight: 800; color: #0f172a; background: rgba(241,245,249,0.7); white-space: nowrap;">${utils.formatRupiah(totalPemasukan)}</td>
+        <td style="padding: 5px 6px; text-align: right; color: #1e40af; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.transferMandiri)}</td>
+        <td style="padding: 5px 6px; text-align: right; color: #4338ca; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.cardEdc)}</td>
+        <td style="padding: 5px 6px; text-align: right; color: #7e22ce; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penghematanTradeIn)}</td>
+        <td style="padding: 5px 6px; text-align: right; color: #be123c; font-weight: 600; white-space: nowrap;">${utils.formatRupiah(r.biayaOperasional)}</td>
+        <td style="padding: 5px 6px; text-align: right; font-weight: bold; color: #334155; white-space: nowrap;">${utils.formatRupiah(r.sisaUangKasKecil)}</td>
+        <td style="padding: 5px 6px; text-align: right; font-weight: bold; color: #0f172a; white-space: nowrap;">${utils.formatRupiah(r.fisikRiil)}</td>
+        <td style="padding: 5px 6px; text-align: center; white-space: nowrap;">${selBadge}</td>
+        <td style="padding: 5px 6px; text-align: center; white-space: nowrap;">${takenBadge}</td>
+      </tr>
+    `;
+  });
+
+  const badgeTotalSelisih = sumSelisih === 0 
+    ? '<span style="color: #047857; font-weight: 900;">✓ PAS (SESUAI)</span>' 
+    : (sumSelisih > 0 ? `<span style="color: #1d4ed8; font-weight: 900;">+${utils.formatRupiah(sumSelisih)}</span>` : `<span style="color: #b91c1c; font-weight: 900;">-${utils.formatRupiah(Math.abs(sumSelisih))}</span>`);
+
+  container.innerHTML = `
+    <!-- HEADER LAPORAN -->
+    <div style="border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start;">
+      <div>
+        <h1 style="font-size: 18px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase; letter-spacing: -0.02em;">
+          LAPORAN REKAPITULASI KAS & OMSET BENGKEL
+        </h1>
+        <div style="font-size: 12px; font-weight: 700; color: #2563eb; margin-top: 2px;">
+          SHOP & DRIVE & BIMA MOTOR
+        </div>
+        <div style="font-size: 10px; color: #64748b; margin-top: 4px;">
+          Periode Data: <strong>${filterText}</strong> &nbsp;|&nbsp; Total: <strong>${totalRecords} Transaksi</strong> &nbsp;|&nbsp; Sumber: <strong>${state.targetFolder || 'Folder UANG TUNAI'}</strong>
+        </div>
+      </div>
+      <div style="text-align: right; font-size: 10px; color: #475569;">
+        <div>Dicetak: <strong>${printTime}</strong></div>
+        <div style="margin-top: 2px; color: #059669; font-weight: bold;">Status: Dokumen Resmi Rekapitulasi Kas</div>
+      </div>
+    </div>
+
+    <!-- EXECUTIVE SUMMARY CARDS -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;">
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;">
+        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Total Omset (Pemasukan)</div>
+        <div style="font-size: 14px; font-weight: 900; color: #0f172a; margin-top: 2px;">${utils.formatRupiah(sumTotalOmset)}</div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">
+          S&D: <strong>${utils.formatRupiah(sumShopDrive)} (${porsiSD}%)</strong><br>
+          BM: <strong>${utils.formatRupiah(sumBimaMotor)} (${porsiBM}%)</strong>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;">
+        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Rincian Non-Tunai</div>
+        <div style="font-size: 14px; font-weight: 900; color: #2563eb; margin-top: 2px;">${utils.formatRupiah(nonTunaiTotal)}</div>
+        <div style="font-size: 8.5px; color: #64748b; margin-top: 2px; line-height: 1.3;">
+          Mandiri: <strong>${utils.formatRupiah(sumMandiri)}</strong> | EDC: <strong>${utils.formatRupiah(sumCardEdc)}</strong><br>
+          Voucher/Tr-In: <strong>${utils.formatRupiah(sumTradeIn)}</strong> | Bon: <strong style="color: #be123c;">${utils.formatRupiah(sumBiayaOps)}</strong>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;">
+        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Jumlah Fisik Riil (Laci)</div>
+        <div style="font-size: 14px; font-weight: 900; color: #047857; margin-top: 2px;">${utils.formatRupiah(sumFisikRiil)}</div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">
+          Sisa Kas Buku: <strong>${utils.formatRupiah(sumSisaKas)}</strong><br>
+          Audit Selisih: ${badgeTotalSelisih}
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;">
+        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Status Pengambilan Cash</div>
+        <div style="font-size: 14px; font-weight: 900; color: #0284c7; margin-top: 2px;">${takenCount} dari ${totalRecords} Shift</div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">
+          Uang Cash Diambil: <strong>${takenCount === totalRecords && totalRecords > 0 ? 'Semua Lengkap (100%)' : `${takenCount} Selesai, ${totalRecords - takenCount} Belum`}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABEL UTAMA REKAPITULASI -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; margin-bottom: 16px;">
+      <thead>
+        <tr style="background: #0f172a; color: #ffffff; text-align: left;">
+          <th style="padding: 6px; font-weight: 800; text-transform: uppercase;">Tanggal</th>
+          <th style="padding: 6px; font-weight: 800; text-transform: uppercase;">Kasir</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase;">Shop & Drive</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase;">Bima Motor</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; background: #1e293b;">Total Omset</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #93c5fd;">Trf Mandiri</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #c7d2fe;">Card / EDC</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #e9d5ff;">Voucher</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #fca5a5;">Biaya Ops</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase;">Sisa Kas</th>
+          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #86efac;">Fisik Riil</th>
+          <th style="padding: 6px; font-weight: 800; text-align: center; text-transform: uppercase;">Audit</th>
+          <th style="padding: 6px; font-weight: 800; text-align: center; text-transform: uppercase;">Cash Diambil</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml}
+      </tbody>
+      <tfoot>
+        <tr style="background: #e2e8f0; font-weight: 900; color: #0f172a; border-top: 2px solid #0f172a;">
+          <td colspan="2" style="padding: 7px 6px; text-transform: uppercase;">TOTAL REKAPITULASI</td>
+          <td style="padding: 7px 6px; text-align: right; color: #b45309;">${utils.formatRupiah(sumShopDrive)}</td>
+          <td style="padding: 7px 6px; text-align: right; color: #1d4ed8;">${utils.formatRupiah(sumBimaMotor)}</td>
+          <td style="padding: 7px 6px; text-align: right; background: #cbd5e1;">${utils.formatRupiah(sumTotalOmset)}</td>
+          <td style="padding: 7px 6px; text-align: right; color: #1e40af;">${utils.formatRupiah(sumMandiri)}</td>
+          <td style="padding: 7px 6px; text-align: right; color: #4338ca;">${utils.formatRupiah(sumCardEdc)}</td>
+          <td style="padding: 7px 6px; text-align: right; color: #7e22ce;">${utils.formatRupiah(sumTradeIn)}</td>
+          <td style="padding: 7px 6px; text-align: right; color: #be123c;">${utils.formatRupiah(sumBiayaOps)}</td>
+          <td style="padding: 7px 6px; text-align: right;">${utils.formatRupiah(sumSisaKas)}</td>
+          <td style="padding: 7px 6px; text-align: right; color: #047857;">${utils.formatRupiah(sumFisikRiil)}</td>
+          <td style="padding: 7px 6px; text-align: center;">${badgeTotalSelisih}</td>
+          <td style="padding: 7px 6px; text-align: center;"><strong>${takenCount}/${totalRecords} Diambil</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- TANDA TANGAN / PENGESAHAN -->
+    <div style="display: flex; justify-content: space-between; text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 10px; color: #475569;">
+      <div style="width: 28%;">
+        <div>Petugas Kasir / Administrasi</div>
+        <div style="height: 44px;"></div>
+        <div style="border-top: 1px solid #94a3b8; padding-top: 4px; font-weight: bold; color: #0f172a;">( ${state.cashierFilter !== 'all' ? state.cashierFilter : 'Kasir Shift'} )</div>
+      </div>
+      <div style="width: 28%;">
+        <div>Diperiksa Oleh (Supervisor)</div>
+        <div style="height: 44px;"></div>
+        <div style="border-top: 1px solid #94a3b8; padding-top: 4px; font-weight: bold; color: #0f172a;">( ........................................ )</div>
+      </div>
+      <div style="width: 28%;">
+        <div>Disetujui Oleh (Pimpinan / Owner)</div>
+        <div style="height: 44px;"></div>
+        <div style="border-top: 1px solid #94a3b8; padding-top: 4px; font-weight: bold; color: #0f172a;">( ........................................ )</div>
+      </div>
+    </div>
+  `;
+
+  return container;
+}
+
+async function downloadReportPdf() {
+  if (state.filteredRecords.length === 0) {
+    showToast('Tidak ada data rekapitulasi untuk diunduh!', 'warning');
+    return;
+  }
+
+  showLoading(true);
+  showToast('Sedang memproses dan menyusun Laporan PDF A4 Landscape...', 'info');
+
+  try {
+    const reportElement = buildPrintableReportElement();
+    reportElement.style.position = 'fixed';
+    reportElement.style.top = '-9999px';
+    reportElement.style.left = '0';
+    document.body.appendChild(reportElement);
+
+    if (typeof html2pdf !== 'undefined') {
+      const filename = `Laporan_Rekapitulasi_Kas_${new Date().toISOString().split('T')[0]}.pdf`;
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          scrollY: 0,
+          windowWidth: 1150
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      };
+
+      await html2pdf().set(opt).from(reportElement).save();
+      
+      document.body.removeChild(reportElement);
+      showLoading(false);
+      showToast('✓ Laporan PDF berhasil dibuat dan diunduh ke komputer Anda!', 'success');
+    } else {
+      document.body.removeChild(reportElement);
+      showLoading(false);
+      window.print();
+    }
+  } catch (err) {
+    console.error('PDF generation error:', err);
+    showLoading(false);
+    showToast('Membuka jendela cetak sistem untuk menyimpan PDF...', 'info');
     window.print();
   }
 }
@@ -1099,6 +1473,10 @@ document.addEventListener('DOMContentLoaded', () => {
     state.statusFilter = e.target.value;
     renderApp();
   });
+  document.getElementById('selectStatusCash')?.addEventListener('change', (e) => {
+    state.cashTakenFilter = e.target.value;
+    renderApp();
+  });
 
   // Search Input
   document.getElementById('inputSearchRekap')?.addEventListener('input', (e) => {
@@ -1155,32 +1533,44 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-function renderTableFooter(sd, bm, total, ops, sisa, fisik, selisih) {
+function renderTableFooter(sd, bm, total, mandiri, cardEdc, tradeIn, ops, sisa, fisik, selisih) {
   const tfoot = document.getElementById('tableRekapFoot');
   if (!tfoot) return;
   
   let badgeSelisih = '';
   if (selisih === 0) {
-    badgeSelisih = '<span class="badge-pas px-2.5 py-1 rounded-full text-[11px] font-bold">✓ Pas (Rp 0)</span>';
+    badgeSelisih = '<span class="badge-pas px-2 py-0.5 rounded-full text-[10px] font-bold">✓ Pas</span>';
   } else if (selisih > 0) {
-    badgeSelisih = '<span class="badge-lebih px-2.5 py-1 rounded-full text-[11px] font-bold">+' + utils.formatRupiah(selisih) + '</span>';
+    badgeSelisih = '<span class="badge-lebih px-1.5 py-0.5 rounded-full text-[10px] font-bold">+' + utils.formatRupiah(selisih) + '</span>';
   } else {
-    badgeSelisih = '<span class="badge-kurang px-2.5 py-1 rounded-full text-[11px] font-bold">-' + utils.formatRupiah(Math.abs(selisih)) + '</span>';
+    badgeSelisih = '<span class="badge-kurang px-1.5 py-0.5 rounded-full text-[10px] font-bold">-' + utils.formatRupiah(Math.abs(selisih)) + '</span>';
   }
 
+  const totalCount = state.filteredRecords.length;
+  const takenCount = state.filteredRecords.filter(r => isRecordCashTaken(r)).length;
+  const allTaken = totalCount > 0 && takenCount === totalCount;
+
   tfoot.innerHTML = `
-    <tr>
-      <td colspan="2" class="py-3 px-4 uppercase tracking-wider text-slate-800">
-        <i class="fa-solid fa-calculator mr-1.5 text-blue-600"></i> TOTAL REKAPITULASI
+    <tr class="text-[11px]">
+      <td colspan="2" class="py-2.5 px-3 uppercase tracking-wider text-slate-800 whitespace-nowrap">
+        <i class="fa-solid fa-calculator mr-1 text-blue-600"></i> TOTAL REKAP
       </td>
-      <td class="py-3 px-4 text-right text-amber-700">${utils.formatRupiah(sd)}</td>
-      <td class="py-3 px-4 text-right text-blue-700">${utils.formatRupiah(bm)}</td>
-      <td class="py-3 px-4 text-right text-slate-950 bg-slate-200/70">${utils.formatRupiah(total)}</td>
-      <td class="py-3 px-4 text-right text-rose-700">${utils.formatRupiah(ops)}</td>
-      <td class="py-3 px-4 text-right text-slate-800">${utils.formatRupiah(sisa)}</td>
-      <td class="py-3 px-4 text-right text-emerald-700 bg-emerald-50/50">${utils.formatRupiah(fisik)}</td>
-      <td class="py-3 px-4 text-center">${badgeSelisih}</td>
-      <td class="py-3 px-4 text-center no-print">-</td>
+      <td class="py-2.5 px-2 text-right text-amber-700 whitespace-nowrap">${utils.formatRupiah(sd)}</td>
+      <td class="py-2.5 px-2 text-right text-blue-700 whitespace-nowrap">${utils.formatRupiah(bm)}</td>
+      <td class="py-2.5 px-2.5 text-right text-slate-950 bg-slate-200/70 whitespace-nowrap font-black">${utils.formatRupiah(total)}</td>
+      <td class="py-2.5 px-2 text-right text-blue-800 whitespace-nowrap font-bold bg-blue-50/40">${utils.formatRupiah(mandiri)}</td>
+      <td class="py-2.5 px-2 text-right text-indigo-800 whitespace-nowrap font-bold bg-indigo-50/40">${utils.formatRupiah(cardEdc)}</td>
+      <td class="py-2.5 px-2 text-right text-purple-800 whitespace-nowrap font-bold bg-purple-50/40">${utils.formatRupiah(tradeIn)}</td>
+      <td class="py-2.5 px-2 text-right text-rose-700 whitespace-nowrap">${utils.formatRupiah(ops)}</td>
+      <td class="py-2.5 px-2 text-right text-slate-800 whitespace-nowrap">${utils.formatRupiah(sisa)}</td>
+      <td class="py-2.5 px-2 text-right text-emerald-700 bg-emerald-50/50 whitespace-nowrap font-black">${utils.formatRupiah(fisik)}</td>
+      <td class="py-2.5 px-2 text-center whitespace-nowrap">${badgeSelisih}</td>
+      <td class="py-2.5 px-1.5 text-center no-print whitespace-nowrap">-</td>
+      <td class="py-2.5 px-2.5 text-center whitespace-nowrap">
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${allTaken ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : (takenCount > 0 ? 'bg-blue-100 text-blue-800 border border-blue-200' : 'bg-slate-200/80 text-slate-700')}">
+          ${takenCount}/${totalCount} Diambil
+        </span>
+      </td>
     </tr>
   `;
 }

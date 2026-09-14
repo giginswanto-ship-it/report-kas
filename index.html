@@ -84,7 +84,7 @@
   </header>
 
   <!-- MAIN WRAPPER -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+  <main class="max-w-[1550px] mx-auto px-3 sm:px-5 lg:px-6 py-5 flex-1 w-full space-y-5">
 
     <!-- FILTER & CONTROL SECTION -->
     <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm space-y-3.5 no-print">
@@ -123,7 +123,7 @@
       </div>
 
       <!-- Filters Row -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 pt-1">
         <!-- Search -->
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
@@ -148,6 +148,15 @@
           </select>
         </div>
 
+        <!-- Filter Status Pengambilan Cash -->
+        <div>
+          <select id="selectStatusCash" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+            <option value="all">Semua Status Uang Cash</option>
+            <option value="taken">✓ Sudah Diambil</option>
+            <option value="not_taken">⏳ Belum Diambil</option>
+          </select>
+        </div>
+
         <!-- Custom Date Range (hidden by default) -->
         <div id="customRangeContainer" class="hidden sm:col-span-2 lg:col-span-1 flex items-center gap-2">
           <input type="date" id="customStartDate" class="w-1/2 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-1 focus:ring-blue-500 outline-none">
@@ -158,21 +167,23 @@
     </section>
 
     <!-- EXECUTIVE KPI METRICS CARDS -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3.5">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-3.5">
       
       <!-- Card 1: JUMLAH FISIK RIIL (UANG FISIK DI LACI) -->
-      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg relative overflow-hidden border border-emerald-400/40 ring-1 ring-emerald-500/30">
+      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg relative overflow-hidden border border-emerald-500/40 ring-1 ring-emerald-500/20 flex flex-col justify-between">
         <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-emerald-400/10 rounded-full pointer-events-none"></div>
-        <div class="flex justify-between items-start mb-2">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300">Jumlah Fisik Riil (Uang Laci)</span>
-              <span class="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-bold border border-emerald-400/40">Kas Fisik</span>
+        <div>
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300">Jumlah Fisik Riil (Uang Laci)</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-bold border border-emerald-400/40">Kas Fisik</span>
+              </div>
+              <div class="text-2xl sm:text-3xl font-black mt-1 text-white tracking-tight" id="kpiFisikRiil">Rp 0</div>
             </div>
-            <div class="text-2xl sm:text-3xl font-black mt-1 text-white tracking-tight" id="kpiFisikRiil">Rp 0</div>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xl border border-emerald-400/40 shadow-inner">
-            <i class="fa-solid fa-money-bill-wave"></i>
+            <div class="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xl border border-emerald-400/40 shadow-inner">
+              <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
           </div>
         </div>
         <div class="mt-3 pt-3 border-t border-white/15 flex justify-between items-center text-[11px]">
@@ -188,15 +199,20 @@
       </div>
 
       <!-- Card 2: Total Omset Keseluruhan -->
-      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-blue-900 to-indigo-900 text-white rounded-2xl p-4 shadow-md relative overflow-hidden">
-        <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-white/5 rounded-full pointer-events-none"></div>
-        <div class="flex justify-between items-start mb-2">
-          <div>
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-200">Total Pemasukan (Omset)</span>
-            <div class="text-2xl sm:text-3xl font-black mt-1 text-white tracking-tight" id="kpiTotalOmset">Rp 0</div>
-          </div>
-          <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-amber-300 text-lg">
-            <i class="fa-solid fa-wallet"></i>
+      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-blue-950 via-indigo-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg relative overflow-hidden border border-blue-500/40 ring-1 ring-blue-500/20 flex flex-col justify-between">
+        <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-blue-400/10 rounded-full pointer-events-none"></div>
+        <div>
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-200">Total Pemasukan (Omset)</span>
+                <span class="px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-200 text-[10px] font-bold border border-blue-400/40">Total</span>
+              </div>
+              <div class="text-2xl sm:text-3xl font-black mt-1 text-white tracking-tight" id="kpiTotalOmset">Rp 0</div>
+            </div>
+            <div class="w-11 h-11 rounded-2xl bg-blue-500/20 text-amber-300 flex items-center justify-center text-xl border border-blue-400/40 shadow-inner">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
           </div>
         </div>
         <div class="mt-3 pt-3 border-t border-white/15 grid grid-cols-2 gap-2 text-[11px]">
@@ -211,40 +227,72 @@
         </div>
       </div>
 
-      <!-- Card 3: Shop & Drive -->
-      <div class="kpi-card bg-white rounded-2xl p-4 border border-amber-100 shadow-sm flex flex-col justify-between">
-        <div class="flex justify-between items-center text-slate-500 mb-1">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Shop & Drive</span>
-          <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
-            <i class="fa-solid fa-car"></i>
-          </span>
+      <!-- Card 3: Transfer Bank Mandiri -->
+      <div class="kpi-card bg-gradient-to-br from-sky-950 via-cyan-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg border border-sky-500/40 ring-1 ring-sky-500/20 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -right-3 -bottom-3 w-16 h-16 bg-sky-400/10 rounded-full pointer-events-none"></div>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-sky-300">Trf Mandiri</span>
+            <span class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30 flex items-center justify-center text-xs shadow-inner">
+              <i class="fa-solid fa-building-columns"></i>
+            </span>
+          </div>
+          <div class="text-lg sm:text-xl font-black text-white tracking-tight mt-1" id="kpiTransferMandiri">Rp 0</div>
         </div>
-        <div class="text-xl font-black text-amber-600 tracking-tight" id="kpiShopDriveAmount">Rp 0</div>
-        <div class="text-[10px] text-slate-400 mt-1 font-semibold" id="kpiShopDrivePct">0% Dari Total</div>
+        <div class="mt-3 pt-2 border-t border-white/10 text-[10px] text-sky-200/90 font-bold flex items-center gap-1">
+          <i class="fa-solid fa-arrow-right-arrow-left text-[9px] text-sky-300"></i> Transfer Bank
+        </div>
       </div>
 
-      <!-- Card 4: Bima Motor -->
-      <div class="kpi-card bg-white rounded-2xl p-4 border border-blue-100 shadow-sm flex flex-col justify-between">
-        <div class="flex justify-between items-center text-slate-500 mb-1">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Bima Motor</span>
-          <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">
-            <i class="fa-solid fa-motorcycle"></i>
-          </span>
+      <!-- Card 4: Card / EDC -->
+      <div class="kpi-card bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg border border-indigo-500/40 ring-1 ring-indigo-500/20 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -right-3 -bottom-3 w-16 h-16 bg-indigo-400/10 rounded-full pointer-events-none"></div>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-300">Card / EDC</span>
+            <span class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 flex items-center justify-center text-xs shadow-inner">
+              <i class="fa-solid fa-credit-card"></i>
+            </span>
+          </div>
+          <div class="text-lg sm:text-xl font-black text-white tracking-tight mt-1" id="kpiCardEdc">Rp 0</div>
         </div>
-        <div class="text-xl font-black text-blue-700 tracking-tight" id="kpiBimaMotorAmount">Rp 0</div>
-        <div class="text-[10px] text-slate-400 mt-1 font-semibold" id="kpiBimaMotorPct">0% Dari Total</div>
+        <div class="mt-3 pt-2 border-t border-white/10 text-[10px] text-indigo-200/90 font-bold flex items-center gap-1">
+          <i class="fa-solid fa-credit-card text-[9px] text-indigo-300"></i> Debit & Kredit
+        </div>
       </div>
 
-      <!-- Card 5: Selisih & Akurasi -->
-      <div class="kpi-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between">
-        <div class="flex justify-between items-center text-slate-500 mb-1">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700">Audit Selisih</span>
-          <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
-            <i class="fa-solid fa-scale-balanced"></i>
-          </span>
+      <!-- Card 5: Voucher / Trade In -->
+      <div class="kpi-card bg-gradient-to-br from-fuchsia-950 via-pink-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg border border-fuchsia-500/40 ring-1 ring-fuchsia-500/20 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -right-3 -bottom-3 w-16 h-16 bg-fuchsia-400/10 rounded-full pointer-events-none"></div>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-fuchsia-300">Voucher / Tr-In</span>
+            <span class="w-8 h-8 rounded-xl bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-400/30 flex items-center justify-center text-xs shadow-inner">
+              <i class="fa-solid fa-tags"></i>
+            </span>
+          </div>
+          <div class="text-lg sm:text-xl font-black text-white tracking-tight mt-1" id="kpiTradeIn">Rp 0</div>
         </div>
-        <div class="text-xl font-black text-emerald-600 tracking-tight" id="kpiSelisih">Rp 0</div>
-        <div class="text-[10px] text-slate-500 mt-1 font-semibold" id="kpiAccuracyBadge">100% Shift Pas</div>
+        <div class="mt-3 pt-2 border-t border-white/10 text-[10px] text-fuchsia-200/90 font-bold flex items-center gap-1">
+          <i class="fa-solid fa-recycle text-[9px] text-fuchsia-300"></i> Diskon Aki / Promo
+        </div>
+      </div>
+
+      <!-- Card 6: Selisih & Akurasi -->
+      <div class="kpi-card bg-gradient-to-br from-slate-900 via-gray-900 to-slate-950 text-white rounded-2xl p-4 shadow-lg border border-slate-700/80 ring-1 ring-slate-600/30 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -right-3 -bottom-3 w-16 h-16 bg-white/5 rounded-full pointer-events-none"></div>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300">Audit Selisih</span>
+            <span class="w-8 h-8 rounded-xl bg-slate-800 text-emerald-400 border border-slate-700 flex items-center justify-center text-xs shadow-inner">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </span>
+          </div>
+          <div class="text-lg sm:text-xl font-black text-emerald-400 tracking-tight mt-1" id="kpiSelisih">Rp 0</div>
+        </div>
+        <div class="mt-3 pt-2 border-t border-white/10 text-[10px] text-slate-300 font-bold truncate" id="kpiAccuracyBadge">
+          100% Pas
+        </div>
       </div>
 
     </section>
@@ -334,25 +382,31 @@
       <!-- TAB 1: REKAPITULASI TABLE PANE -->
       <div id="tabPaneRekap" class="tab-pane p-0">
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
+          <table class="w-full text-left border-collapse text-[11px]">
             <thead>
-              <tr class="bg-slate-100/70 border-b border-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider">
-                <th class="py-3 px-4">Tanggal</th>
-                <th class="py-3 px-4">Kasir / Shift</th>
-                <th class="py-3 px-4 text-right">Shop & Drive</th>
-                <th class="py-3 px-4 text-right">Bima Motor</th>
-                <th class="py-3 px-4 text-right bg-slate-200/50">Total Omset</th>
-                <th class="py-3 px-4 text-right">Biaya Ops</th>
-                <th class="py-3 px-4 text-right">Sisa Kas</th>
-                <th class="py-3 px-4 text-right">Fisik Riil</th>
-                <th class="py-3 px-4 text-center">Status Audit</th>
-                <th class="py-3 px-4 text-center no-print">Aksi</th>
+              <tr class="bg-slate-100/80 border-b border-slate-200 text-slate-600 text-[10px] sm:text-[11px] font-black uppercase tracking-wider">
+                <th class="py-2.5 px-3 whitespace-nowrap">Tanggal</th>
+                <th class="py-2.5 px-3 whitespace-nowrap">Kasir / Shift</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap">Shop & Drive</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap">Bima Motor</th>
+                <th class="py-2.5 px-2.5 text-right bg-slate-200/50 whitespace-nowrap font-black">Total Omset</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap text-blue-700 bg-blue-50/40">Trf Mandiri</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap text-indigo-700 bg-indigo-50/40">Card / EDC</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap text-purple-700 bg-purple-50/40">Voucher / Tr-In</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap text-rose-700">Biaya Ops</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap">Sisa Kas</th>
+                <th class="py-2.5 px-2 text-right whitespace-nowrap font-bold text-emerald-800 bg-emerald-50/40">Fisik Riil</th>
+                <th class="py-2.5 px-2 text-center whitespace-nowrap">Status Audit</th>
+                <th class="py-2.5 px-1.5 text-center no-print whitespace-nowrap">Aksi</th>
+                <th class="py-2.5 px-2.5 text-center whitespace-nowrap">
+                  <i class="fa-solid fa-hand-holding-dollar text-emerald-600 mr-0.5"></i> Cash Diambil
+                </th>
               </tr>
             </thead>
-            <tbody id="tableRekapBody" class="divide-y divide-slate-100">
+            <tbody id="tableRekapBody" class="divide-y divide-slate-100 text-[11px]">
               <!-- Rendered Dynamically -->
             </tbody>
-            <tfoot id="tableRekapFoot" class="bg-slate-100/90 font-black text-slate-900 text-xs border-t-2 border-slate-300">
+            <tfoot id="tableRekapFoot" class="bg-slate-100/90 font-black text-slate-900 text-[11px] border-t-2 border-slate-300">
               <!-- Dynamic Summary Row -->
             </tfoot>
           </table>
@@ -507,6 +561,20 @@
           <div class="flex justify-between items-center pt-2 border-t border-blue-200">
             <span class="font-black text-slate-900">Selisih Kasir:</span>
             <span id="modalSelisih" class="font-black text-base">Rp 0</span>
+          </div>
+        </div>
+
+        <!-- Status Pengambilan Uang Fisik Kasir -->
+        <div class="p-3.5 rounded-2xl border transition-all" id="modalCashTakenContainer">
+          <div class="flex justify-between items-center">
+            <div>
+              <span class="font-black uppercase tracking-wider text-[10px] block" id="modalCashTakenTitle">Status Pengambilan Uang Cash</span>
+              <span class="text-[11px] text-slate-500 font-medium" id="modalCashTakenSubtitle">Uang fisik kasir di laci</span>
+            </div>
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none px-3.5 py-1.5 rounded-xl border transition shadow-xs" id="modalCashTakenLabel">
+              <input type="checkbox" id="modalCashTakenCheckbox" class="w-4 h-4 rounded text-emerald-600 accent-emerald-600 cursor-pointer">
+              <span class="text-xs font-bold" id="modalCashTakenText">Belum Diambil</span>
+            </label>
           </div>
         </div>
 

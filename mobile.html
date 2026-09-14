@@ -97,17 +97,32 @@
       
       <!-- Mini Swipeable KPI Badges -->
       <div class="grid grid-cols-3 gap-2">
-        <div class="bg-white p-2.5 rounded-2xl border border-slate-200 text-center shadow-xs">
-          <span class="text-[9px] font-extrabold uppercase text-slate-400 block">Total Omset</span>
-          <span class="text-xs font-black text-slate-900 block mt-0.5" id="mKpiTotalOmset">Rp 0</span>
+        <div class="bg-gradient-to-br from-blue-950 via-indigo-900 to-slate-900 border border-blue-500/30 text-white p-2.5 rounded-2xl text-center shadow-xs">
+          <span class="text-[9px] font-extrabold uppercase text-blue-200 block">Total Omset</span>
+          <span class="text-xs font-black text-white block mt-0.5" id="mKpiTotalOmset">Rp 0</span>
         </div>
-        <div class="bg-white p-2.5 rounded-2xl border border-amber-200 text-center shadow-xs">
-          <span class="text-[9px] font-extrabold uppercase text-amber-700 block">Shop & Drive</span>
-          <span class="text-xs font-black text-amber-600 block mt-0.5" id="mKpiShopDrive">Rp 0</span>
+        <div class="bg-gradient-to-br from-amber-950 via-amber-900 to-slate-900 border border-amber-500/30 text-white p-2.5 rounded-2xl text-center shadow-xs">
+          <span class="text-[9px] font-extrabold uppercase text-amber-300 block">Shop & Drive</span>
+          <span class="text-xs font-black text-amber-200 block mt-0.5" id="mKpiShopDrive">Rp 0</span>
         </div>
-        <div class="bg-white p-2.5 rounded-2xl border border-blue-200 text-center shadow-xs">
-          <span class="text-[9px] font-extrabold uppercase text-blue-700 block">Bima Motor</span>
-          <span class="text-xs font-black text-blue-600 block mt-0.5" id="mKpiBimaMotor">Rp 0</span>
+        <div class="bg-gradient-to-br from-blue-950 via-sky-900 to-slate-900 border border-sky-500/30 text-white p-2.5 rounded-2xl text-center shadow-xs">
+          <span class="text-[9px] font-extrabold uppercase text-sky-300 block">Bima Motor</span>
+          <span class="text-xs font-black text-sky-200 block mt-0.5" id="mKpiBimaMotor">Rp 0</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <div class="bg-gradient-to-br from-sky-950 via-cyan-900 to-slate-900 border border-sky-500/30 text-white p-2 rounded-2xl text-center shadow-xs">
+          <span class="text-[9px] font-extrabold uppercase text-sky-300 block">Trf Mandiri</span>
+          <span class="text-xs font-black text-sky-200 block mt-0.5" id="mKpiMandiri">Rp 0</span>
+        </div>
+        <div class="bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 border border-indigo-500/30 text-white p-2 rounded-2xl text-center shadow-xs">
+          <span class="text-[9px] font-extrabold uppercase text-indigo-300 block">Card / EDC</span>
+          <span class="text-xs font-black text-indigo-200 block mt-0.5" id="mKpiEdc">Rp 0</span>
+        </div>
+        <div class="bg-gradient-to-br from-fuchsia-950 via-pink-900 to-slate-900 border border-fuchsia-500/30 text-white p-2 rounded-2xl text-center shadow-xs">
+          <span class="text-[9px] font-extrabold uppercase text-fuchsia-300 block">Voucher/Tr-In</span>
+          <span class="text-xs font-black text-fuchsia-200 block mt-0.5" id="mKpiTradeIn">Rp 0</span>
         </div>
       </div>
 
@@ -229,6 +244,20 @@
         <div class="flex justify-between"><span>Fisik Riil Laci:</span><span class="font-black text-emerald-800 text-sm" id="drwFisikRiil">Rp 0</span></div>
         <div class="flex justify-between pt-1 border-t border-emerald-200 font-black">
           <span>Selisih Kasir:</span><span id="drwSelisih" class="text-sm">Rp 0</span>
+        </div>
+      </div>
+
+      <!-- Status Pengambilan Uang Fisik Laci -->
+      <div class="p-3 rounded-2xl border transition-all" id="drwCashTakenContainer">
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="text-[10px] font-black uppercase text-slate-500 block">Status Cash Laci</span>
+            <span class="text-[11px] font-bold text-slate-700" id="drwCashTakenSubtitle">Pengambilan Uang Kasir</span>
+          </div>
+          <button type="button" id="drwBtnToggleCash" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition">
+            <i id="drwIconCash" class="fa-solid fa-square-check text-xs"></i>
+            <span id="drwTextCash">Sudah Diambil</span>
+          </button>
         </div>
       </div>
 

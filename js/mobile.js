@@ -2,6 +2,33 @@
  * PROGRAM PEMBACA REKAPITULASI KAS BENGKEL - MOBILE ENGINE
  */
 
+const STORAGE_KEY_CASH_TAKEN = 'rekap_kas_cash_taken_status_v1';
+
+function getCashTakenMap() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_CASH_TAKEN);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function isRecordCashTaken(record) {
+  if (!record) return false;
+  const map = getCashTakenMap();
+  const key = record.id || record.tanggal;
+  return map[key]?.taken === true;
+}
+
+function setRecordCashTaken(recordKey, isTaken) {
+  const map = getCashTakenMap();
+  map[recordKey] = {
+    taken: Boolean(isTaken),
+    updatedAt: new Date().toISOString()
+  };
+  localStorage.setItem(STORAGE_KEY_CASH_TAKEN, JSON.stringify(map));
+}
+
 const mState = {
   allRecords: [],
   filteredRecords: [],
@@ -176,6 +203,9 @@ function renderMobileKpi() {
   let sumOmset = 0;
   let sumSD = 0;
   let sumBM = 0;
+  let sumMandiri = 0;
+  let sumEdc = 0;
+  let sumTradeIn = 0;
   let sumOps = 0;
   let sumSisa = 0;
   let sumSelisih = 0;
@@ -185,6 +215,9 @@ function renderMobileKpi() {
     sumOmset += totalPemasukan;
     sumSD += Number(r.penjualanShopDrive) || 0;
     sumBM += Number(r.penjualanBimaMotor) || 0;
+    sumMandiri += Number(r.transferMandiri) || 0;
+    sumEdc += Number(r.cardEdc) || 0;
+    sumTradeIn += Number(r.penghematanTradeIn) || 0;
     sumOps += Number(r.biayaOperasional) || 0;
     sumSisa += Number(r.sisaUangKasKecil) || 0;
     sumFisik += Number(r.fisikRiil) || 0;
@@ -202,6 +235,9 @@ function renderMobileKpi() {
   setEl('mKpiPorsiSD', pSD + '%');
   setEl('mKpiBimaMotor', mUtils.formatRupiah(sumBM));
   setEl('mKpiPorsiBM', pBM + '%');
+  setEl('mKpiMandiri', mUtils.formatRupiah(sumMandiri));
+  setEl('mKpiEdc', mUtils.formatRupiah(sumEdc));
+  setEl('mKpiTradeIn', mUtils.formatRupiah(sumTradeIn));
   setEl('mKpiBiayaOps', mUtils.formatRupiah(sumOps));
 
   const selisihEl = document.getElementById('mKpiSelisih');
@@ -235,6 +271,8 @@ function renderMobileCards() {
   mState.filteredRecords.forEach((r) => {
     const totalPemasukan = Number(r.totalPemasukan) || (Number(r.penjualanShopDrive) + Number(r.penjualanBimaMotor)) || 0;
     const selisih = Number(r.selisih) || 0;
+    const isTaken = isRecordCashTaken(r);
+    const recordKey = r.id || r.tanggal;
 
     let badge = '';
     if (selisih === 0) {
@@ -267,6 +305,21 @@ function renderMobileCards() {
         </div>
       </div>
 
+      <div class="grid grid-cols-3 gap-1.5 bg-sky-50/70 p-2 rounded-xl text-[10px] border border-sky-100">
+        <div>
+          <span class="text-[9px] text-sky-700 font-bold block">Trf Mandiri</span>
+          <span class="font-extrabold text-slate-800">${mUtils.formatRupiah(r.transferMandiri)}</span>
+        </div>
+        <div>
+          <span class="text-[9px] text-indigo-700 font-bold block">Card / EDC</span>
+          <span class="font-extrabold text-slate-800">${mUtils.formatRupiah(r.cardEdc)}</span>
+        </div>
+        <div>
+          <span class="text-[9px] text-purple-700 font-bold block">Voucher / Tr-In</span>
+          <span class="font-extrabold text-slate-800">${mUtils.formatRupiah(r.penghematanTradeIn)}</span>
+        </div>
+      </div>
+
       <div class="flex justify-between items-center pt-1 text-xs">
         <div>
           <span class="text-[10px] text-slate-400 font-medium block">Total Omset</span>
@@ -277,7 +330,33 @@ function renderMobileCards() {
           <span class="font-black text-emerald-700">${mUtils.formatRupiah(r.fisikRiil)}</span>
         </div>
       </div>
+
+      <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+        <span class="text-[10px] font-bold text-slate-500">Uang Cash Laci:</span>
+        <button type="button" class="btn-m-toggle-cash inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold transition ${isTaken ? 'bg-emerald-50 text-emerald-800 border border-emerald-300' : 'bg-slate-100 text-slate-600 border border-slate-200'}" title="Klik untuk mengubah status pengambilan">
+          <i class="${isTaken ? 'fa-solid fa-square-check text-emerald-600' : 'fa-regular fa-square text-slate-400'} text-xs"></i>
+          <span>${isTaken ? '✓ Sudah Diambil' : 'Belum Diambil'}</span>
+        </button>
+      </div>
     `;
+
+    // Toggle cash status handler on mobile
+    const btnToggle = card.querySelector('.btn-m-toggle-cash');
+    if (btnToggle) {
+      btnToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const current = isRecordCashTaken(r);
+        const newStatus = !current;
+        setRecordCashTaken(recordKey, newStatus);
+        showMobileToast(
+          newStatus
+            ? `✓ Uang Cash ${r.tanggal || '-'} ditandai SUDAH DIAMBIL`
+            : `Uang Cash ${r.tanggal || '-'} ditandai BELUM DIAMBIL`,
+          newStatus ? 'success' : 'info'
+        );
+        renderMobileCards();
+      });
+    }
 
     card.addEventListener('click', () => openMobileDrawer(r));
     container.appendChild(card);
@@ -412,6 +491,42 @@ function openMobileDrawer(r) {
     } else {
       expBox.innerHTML = '<span class="text-[11px] text-slate-400 italic">Tidak ada bon operasional</span>';
     }
+  }
+
+  // Cash taken in drawer
+  const isTaken = isRecordCashTaken(r);
+  const recordKey = r.id || r.tanggal;
+  const drwCashContainer = document.getElementById('drwCashTakenContainer');
+  const drwBtn = document.getElementById('drwBtnToggleCash');
+  const drwIcon = document.getElementById('drwIconCash');
+  const drwText = document.getElementById('drwTextCash');
+
+  if (drwCashContainer && drwBtn && drwIcon && drwText) {
+    if (isTaken) {
+      drwCashContainer.className = 'p-3 rounded-2xl border bg-emerald-50 border-emerald-300';
+      drwBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 border border-emerald-300 text-emerald-800 transition';
+      drwIcon.className = 'fa-solid fa-square-check text-emerald-600 text-xs';
+      drwText.innerText = '✓ Sudah Diambil';
+    } else {
+      drwCashContainer.className = 'p-3 rounded-2xl border bg-slate-50 border-slate-200';
+      drwBtn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-300 text-slate-600 transition';
+      drwIcon.className = 'fa-regular fa-square text-slate-400 text-xs';
+      drwText.innerText = 'Belum Diambil';
+    }
+
+    drwBtn.onclick = () => {
+      const cur = isRecordCashTaken(r);
+      const newStatus = !cur;
+      setRecordCashTaken(recordKey, newStatus);
+      showMobileToast(
+        newStatus
+          ? `✓ Uang Cash ${r.tanggal || '-'} ditandai SUDAH DIAMBIL`
+          : `Uang Cash ${r.tanggal || '-'} ditandai BELUM DIAMBIL`,
+        newStatus ? 'success' : 'info'
+      );
+      openMobileDrawer(r);
+      renderMobileCards();
+    };
   }
 
   setEl('drwCatatan', r.catatan || 'Tidak ada catatan tambahan.');
