@@ -1039,13 +1039,14 @@ function printReport() {
 function buildPrintableReportElement() {
   const container = document.createElement('div');
   container.id = 'tempPdfReportContainer';
-  container.style.width = '1120px';
-  container.style.padding = '24px 28px';
+  container.style.width = '1000px';
+  container.style.maxWidth = '1000px';
+  container.style.padding = '14px 18px';
   container.style.background = '#ffffff';
   container.style.color = '#0f172a';
   container.style.fontFamily = "'Plus Jakarta Sans', Arial, sans-serif";
-  container.style.fontSize = '11px';
-  container.style.lineHeight = '1.4';
+  container.style.fontSize = '9px';
+  container.style.lineHeight = '1.3';
   container.style.boxSizing = 'border-box';
 
   // Calculate Aggregates
@@ -1108,29 +1109,28 @@ function buildPrintableReportElement() {
     else selBadge = `<span style="color: #b91c1c; font-weight: bold;">-${utils.formatRupiah(Math.abs(selisih))}</span>`;
 
     const takenBadge = isTaken 
-      ? '<span style="background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px;">✓ Sudah Diambil</span>'
-      : '<span style="background: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 4px; font-size: 10px;">Belum Diambil</span>';
+      ? '<span style="color: #166534; font-weight: bold;">✓ Ya</span>'
+      : '<span style="color: #64748b;">Belum</span>';
 
     const bgRow = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
 
     rowsHtml += `
-      <tr style="background: ${bgRow}; border-bottom: 1px solid #e2e8f0;">
-        <td style="padding: 5px 6px; font-weight: 600; white-space: nowrap;">${r.tanggal || '-'}</td>
-        <td style="padding: 5px 6px;">
+      <tr style="background: ${bgRow}; border-bottom: 1px solid #e2e8f0; page-break-inside: avoid;">
+        <td style="padding: 4px 3px; font-weight: 600; white-space: nowrap;">${r.tanggal || '-'}</td>
+        <td style="padding: 4px 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
           <div style="font-weight: bold; color: #1e293b;">${r.kasir || 'Kasir'}</div>
-          <div style="font-size: 8px; color: #64748b;">${r.sumber || 'UANG TUNAI'}</div>
         </td>
-        <td style="padding: 5px 6px; text-align: right; color: #b45309; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penjualanShopDrive)}</td>
-        <td style="padding: 5px 6px; text-align: right; color: #1d4ed8; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penjualanBimaMotor)}</td>
-        <td style="padding: 5px 6px; text-align: right; font-weight: 800; color: #0f172a; background: rgba(241,245,249,0.7); white-space: nowrap;">${utils.formatRupiah(totalPemasukan)}</td>
-        <td style="padding: 5px 6px; text-align: right; color: #1e40af; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.transferMandiri)}</td>
-        <td style="padding: 5px 6px; text-align: right; color: #4338ca; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.cardEdc)}</td>
-        <td style="padding: 5px 6px; text-align: right; color: #7e22ce; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penghematanTradeIn)}</td>
-        <td style="padding: 5px 6px; text-align: right; color: #be123c; font-weight: 600; white-space: nowrap;">${utils.formatRupiah(r.biayaOperasional)}</td>
-        <td style="padding: 5px 6px; text-align: right; font-weight: bold; color: #334155; white-space: nowrap;">${utils.formatRupiah(r.sisaUangKasKecil)}</td>
-        <td style="padding: 5px 6px; text-align: right; font-weight: bold; color: #0f172a; white-space: nowrap;">${utils.formatRupiah(r.fisikRiil)}</td>
-        <td style="padding: 5px 6px; text-align: center; white-space: nowrap;">${selBadge}</td>
-        <td style="padding: 5px 6px; text-align: center; white-space: nowrap;">${takenBadge}</td>
+        <td style="padding: 4px 3px; text-align: right; color: #b45309; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penjualanShopDrive)}</td>
+        <td style="padding: 4px 3px; text-align: right; color: #1d4ed8; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penjualanBimaMotor)}</td>
+        <td style="padding: 4px 3px; text-align: right; font-weight: 800; color: #0f172a; background: rgba(241,245,249,0.7); white-space: nowrap;">${utils.formatRupiah(totalPemasukan)}</td>
+        <td style="padding: 4px 3px; text-align: right; color: #1e40af; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.transferMandiri)}</td>
+        <td style="padding: 4px 3px; text-align: right; color: #4338ca; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.cardEdc)}</td>
+        <td style="padding: 4px 3px; text-align: right; color: #7e22ce; font-weight: bold; white-space: nowrap;">${utils.formatRupiah(r.penghematanTradeIn)}</td>
+        <td style="padding: 4px 3px; text-align: right; color: #be123c; font-weight: 600; white-space: nowrap;">${utils.formatRupiah(r.biayaOperasional)}</td>
+        <td style="padding: 4px 3px; text-align: right; font-weight: bold; color: #334155; white-space: nowrap;">${utils.formatRupiah(r.sisaUangKasKecil)}</td>
+        <td style="padding: 4px 3px; text-align: right; font-weight: bold; color: #0f172a; white-space: nowrap;">${utils.formatRupiah(r.fisikRiil)}</td>
+        <td style="padding: 4px 3px; text-align: center; white-space: nowrap;">${selBadge}</td>
+        <td style="padding: 4px 3px; text-align: center; white-space: nowrap; font-size: 8px;">${takenBadge}</td>
       </tr>
     `;
   });
@@ -1141,79 +1141,94 @@ function buildPrintableReportElement() {
 
   container.innerHTML = `
     <!-- HEADER LAPORAN -->
-    <div style="border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start;">
+    <div style="border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start;">
       <div>
-        <h1 style="font-size: 18px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase; letter-spacing: -0.02em;">
+        <h1 style="font-size: 15px; font-weight: 900; margin: 0; color: #0f172a; text-transform: uppercase; letter-spacing: -0.02em;">
           LAPORAN REKAPITULASI KAS & OMSET BENGKEL
         </h1>
-        <div style="font-size: 12px; font-weight: 700; color: #2563eb; margin-top: 2px;">
+        <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 1px;">
           SHOP & DRIVE & BIMA MOTOR
         </div>
-        <div style="font-size: 10px; color: #64748b; margin-top: 4px;">
+        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">
           Periode Data: <strong>${filterText}</strong> &nbsp;|&nbsp; Total: <strong>${totalRecords} Transaksi</strong> &nbsp;|&nbsp; Sumber: <strong>${state.targetFolder || 'Folder UANG TUNAI'}</strong>
         </div>
       </div>
-      <div style="text-align: right; font-size: 10px; color: #475569;">
+      <div style="text-align: right; font-size: 9px; color: #475569;">
         <div>Dicetak: <strong>${printTime}</strong></div>
         <div style="margin-top: 2px; color: #059669; font-weight: bold;">Status: Dokumen Resmi Rekapitulasi Kas</div>
       </div>
     </div>
 
     <!-- EXECUTIVE SUMMARY CARDS -->
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;">
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;">
-        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Total Omset (Pemasukan)</div>
-        <div style="font-size: 14px; font-weight: 900; color: #0f172a; margin-top: 2px;">${utils.formatRupiah(sumTotalOmset)}</div>
-        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px;">
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px;">
+        <div style="font-size: 8px; font-weight: 800; text-transform: uppercase; color: #475569;">Total Omset (Pemasukan)</div>
+        <div style="font-size: 12px; font-weight: 900; color: #0f172a; margin-top: 1px;">${utils.formatRupiah(sumTotalOmset)}</div>
+        <div style="font-size: 8px; color: #64748b; margin-top: 1px;">
           S&D: <strong>${utils.formatRupiah(sumShopDrive)} (${porsiSD}%)</strong><br>
           BM: <strong>${utils.formatRupiah(sumBimaMotor)} (${porsiBM}%)</strong>
         </div>
       </div>
 
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;">
-        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Rincian Non-Tunai</div>
-        <div style="font-size: 14px; font-weight: 900; color: #2563eb; margin-top: 2px;">${utils.formatRupiah(nonTunaiTotal)}</div>
-        <div style="font-size: 8.5px; color: #64748b; margin-top: 2px; line-height: 1.3;">
-          Mandiri (PT DUTARAYA BERJAYA): <strong>${utils.formatRupiah(sumMandiri)}</strong> | EDC: <strong>${utils.formatRupiah(sumCardEdc)}</strong><br>
-          Voucher/Tr-In: <strong>${utils.formatRupiah(sumTradeIn)}</strong> | Bon: <strong style="color: #be123c;">${utils.formatRupiah(sumBiayaOps)}</strong>
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px;">
+        <div style="font-size: 8px; font-weight: 800; text-transform: uppercase; color: #475569;">Rincian Non-Tunai</div>
+        <div style="font-size: 12px; font-weight: 900; color: #2563eb; margin-top: 1px;">${utils.formatRupiah(nonTunaiTotal)}</div>
+        <div style="font-size: 8px; color: #64748b; margin-top: 1px; line-height: 1.2;">
+          Mandiri: <strong>${utils.formatRupiah(sumMandiri)}</strong> | EDC: <strong>${utils.formatRupiah(sumCardEdc)}</strong><br>
+          Tr-In: <strong>${utils.formatRupiah(sumTradeIn)}</strong> | Bon: <strong style="color: #be123c;">${utils.formatRupiah(sumBiayaOps)}</strong>
         </div>
       </div>
 
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;">
-        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Jumlah Fisik Riil (Laci)</div>
-        <div style="font-size: 14px; font-weight: 900; color: #047857; margin-top: 2px;">${utils.formatRupiah(sumFisikRiil)}</div>
-        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px;">
+        <div style="font-size: 8px; font-weight: 800; text-transform: uppercase; color: #475569;">Jumlah Fisik Riil (Laci)</div>
+        <div style="font-size: 12px; font-weight: 900; color: #047857; margin-top: 1px;">${utils.formatRupiah(sumFisikRiil)}</div>
+        <div style="font-size: 8px; color: #64748b; margin-top: 1px;">
           Sisa Kas Buku: <strong>${utils.formatRupiah(sumSisaKas)}</strong><br>
           Audit Selisih: ${badgeTotalSelisih}
         </div>
       </div>
 
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;">
-        <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Status Pengambilan Cash</div>
-        <div style="font-size: 14px; font-weight: 900; color: #0284c7; margin-top: 2px;">${takenCount} dari ${totalRecords} Shift</div>
-        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">
-          Uang Cash Diambil: <strong>${takenCount === totalRecords && totalRecords > 0 ? 'Semua Lengkap (100%)' : `${takenCount} Selesai, ${totalRecords - takenCount} Belum`}</strong>
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 8px;">
+        <div style="font-size: 8px; font-weight: 800; text-transform: uppercase; color: #475569;">Status Pengambilan Cash</div>
+        <div style="font-size: 12px; font-weight: 900; color: #0284c7; margin-top: 1px;">${takenCount} dari ${totalRecords} Shift</div>
+        <div style="font-size: 8px; color: #64748b; margin-top: 1px;">
+          Status: <strong>${takenCount === totalRecords && totalRecords > 0 ? 'Semua Diambil (100%)' : `${takenCount} Diambil, ${totalRecords - takenCount} Belum`}</strong>
         </div>
       </div>
     </div>
 
-    <!-- TABEL UTAMA REKAPITULASI -->
-    <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; margin-bottom: 16px;">
+    <!-- TABEL UTAMA REKAPITULASI (100% FIXED WIDTH, NO CUTOFF) -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 8px; table-layout: fixed; margin-bottom: 12px;">
+      <colgroup>
+        <col style="width: 8.0%;">
+        <col style="width: 9.0%;">
+        <col style="width: 8.5%;">
+        <col style="width: 8.0%;">
+        <col style="width: 9.0%;">
+        <col style="width: 8.5%;">
+        <col style="width: 8.0%;">
+        <col style="width: 7.5%;">
+        <col style="width: 7.5%;">
+        <col style="width: 8.0%;">
+        <col style="width: 8.5%;">
+        <col style="width: 5.5%;">
+        <col style="width: 4.0%;">
+      </colgroup>
       <thead>
         <tr style="background: #0f172a; color: #ffffff; text-align: left;">
-          <th style="padding: 6px; font-weight: 800; text-transform: uppercase;">Tanggal</th>
-          <th style="padding: 6px; font-weight: 800; text-transform: uppercase;">Kasir</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase;">Shop & Drive</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase;">Bima Motor</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; background: #1e293b;">Total Omset</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #93c5fd;">Trf Mandiri</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #c7d2fe;">Card / EDC</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #e9d5ff;">Voucher</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #fca5a5;">Biaya Ops</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase;">Sisa Kas</th>
-          <th style="padding: 6px; font-weight: 800; text-align: right; text-transform: uppercase; color: #86efac;">Fisik Riil</th>
-          <th style="padding: 6px; font-weight: 800; text-align: center; text-transform: uppercase;">Audit</th>
-          <th style="padding: 6px; font-weight: 800; text-align: center; text-transform: uppercase;">Cash Diambil</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-transform: uppercase;">Tanggal</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-transform: uppercase;">Kasir</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase;">Shop & Drive</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase;">Bima Motor</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase; background: #1e293b;">Total Omset</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase; color: #93c5fd;">Trf Mandiri</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase; color: #c7d2fe;">Card / EDC</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase; color: #e9d5ff;">Voucher</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase; color: #fca5a5;">Biaya Ops</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase;">Sisa Kas</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: right; text-transform: uppercase; color: #86efac;">Fisik Riil</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: center; text-transform: uppercase;">Audit</th>
+          <th style="padding: 5px 3px; font-weight: 800; text-align: center; text-transform: uppercase;">Cash</th>
         </tr>
       </thead>
       <tbody>
@@ -1221,38 +1236,38 @@ function buildPrintableReportElement() {
       </tbody>
       <tfoot>
         <tr style="background: #e2e8f0; font-weight: 900; color: #0f172a; border-top: 2px solid #0f172a;">
-          <td colspan="2" style="padding: 7px 6px; text-transform: uppercase;">TOTAL REKAPITULASI</td>
-          <td style="padding: 7px 6px; text-align: right; color: #b45309;">${utils.formatRupiah(sumShopDrive)}</td>
-          <td style="padding: 7px 6px; text-align: right; color: #1d4ed8;">${utils.formatRupiah(sumBimaMotor)}</td>
-          <td style="padding: 7px 6px; text-align: right; background: #cbd5e1;">${utils.formatRupiah(sumTotalOmset)}</td>
-          <td style="padding: 7px 6px; text-align: right; color: #1e40af;">${utils.formatRupiah(sumMandiri)}</td>
-          <td style="padding: 7px 6px; text-align: right; color: #4338ca;">${utils.formatRupiah(sumCardEdc)}</td>
-          <td style="padding: 7px 6px; text-align: right; color: #7e22ce;">${utils.formatRupiah(sumTradeIn)}</td>
-          <td style="padding: 7px 6px; text-align: right; color: #be123c;">${utils.formatRupiah(sumBiayaOps)}</td>
-          <td style="padding: 7px 6px; text-align: right;">${utils.formatRupiah(sumSisaKas)}</td>
-          <td style="padding: 7px 6px; text-align: right; color: #047857;">${utils.formatRupiah(sumFisikRiil)}</td>
-          <td style="padding: 7px 6px; text-align: center;">${badgeTotalSelisih}</td>
-          <td style="padding: 7px 6px; text-align: center;"><strong>${takenCount}/${totalRecords} Diambil</strong></td>
+          <td colspan="2" style="padding: 5px 3px; text-transform: uppercase;">TOTAL</td>
+          <td style="padding: 5px 3px; text-align: right; color: #b45309;">${utils.formatRupiah(sumShopDrive)}</td>
+          <td style="padding: 5px 3px; text-align: right; color: #1d4ed8;">${utils.formatRupiah(sumBimaMotor)}</td>
+          <td style="padding: 5px 3px; text-align: right; background: #cbd5e1;">${utils.formatRupiah(sumTotalOmset)}</td>
+          <td style="padding: 5px 3px; text-align: right; color: #1e40af;">${utils.formatRupiah(sumMandiri)}</td>
+          <td style="padding: 5px 3px; text-align: right; color: #4338ca;">${utils.formatRupiah(sumCardEdc)}</td>
+          <td style="padding: 5px 3px; text-align: right; color: #7e22ce;">${utils.formatRupiah(sumTradeIn)}</td>
+          <td style="padding: 5px 3px; text-align: right; color: #be123c;">${utils.formatRupiah(sumBiayaOps)}</td>
+          <td style="padding: 5px 3px; text-align: right;">${utils.formatRupiah(sumSisaKas)}</td>
+          <td style="padding: 5px 3px; text-align: right; color: #047857;">${utils.formatRupiah(sumFisikRiil)}</td>
+          <td style="padding: 5px 3px; text-align: center;">${badgeTotalSelisih}</td>
+          <td style="padding: 5px 3px; text-align: center; font-size: 7.5px;">${takenCount}/${totalRecords}</td>
         </tr>
       </tfoot>
     </table>
 
     <!-- TANDA TANGAN / PENGESAHAN -->
-    <div style="display: flex; justify-content: space-between; text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 10px; color: #475569;">
+    <div style="display: flex; justify-content: space-between; text-align: center; margin-top: 14px; padding-top: 8px; border-top: 1px dashed #cbd5e1; font-size: 9px; color: #475569; page-break-inside: avoid;">
       <div style="width: 28%;">
         <div>Petugas Kasir / Administrasi</div>
-        <div style="height: 44px;"></div>
-        <div style="border-top: 1px solid #94a3b8; padding-top: 4px; font-weight: bold; color: #0f172a;">( ${state.cashierFilter !== 'all' ? state.cashierFilter : 'Kasir Shift'} )</div>
+        <div style="height: 38px;"></div>
+        <div style="border-top: 1px solid #94a3b8; padding-top: 3px; font-weight: bold; color: #0f172a;">( ${state.cashierFilter !== 'all' ? state.cashierFilter : 'Kasir Shift'} )</div>
       </div>
       <div style="width: 28%;">
         <div>Diperiksa Oleh (Supervisor)</div>
-        <div style="height: 44px;"></div>
-        <div style="border-top: 1px solid #94a3b8; padding-top: 4px; font-weight: bold; color: #0f172a;">( ........................................ )</div>
+        <div style="height: 38px;"></div>
+        <div style="border-top: 1px solid #94a3b8; padding-top: 3px; font-weight: bold; color: #0f172a;">( ........................................ )</div>
       </div>
       <div style="width: 28%;">
         <div>Disetujui Oleh (Pimpinan / Owner)</div>
-        <div style="height: 44px;"></div>
-        <div style="border-top: 1px solid #94a3b8; padding-top: 4px; font-weight: bold; color: #0f172a;">( ........................................ )</div>
+        <div style="height: 38px;"></div>
+        <div style="border-top: 1px solid #94a3b8; padding-top: 3px; font-weight: bold; color: #0f172a;">( ........................................ )</div>
       </div>
     </div>
   `;
@@ -1267,7 +1282,7 @@ async function downloadReportPdf() {
   }
 
   showLoading(true);
-  showToast('Sedang memproses dan menyusun Laporan PDF A4 Landscape...', 'info');
+  showToast('Sedang menyusun Laporan PDF A4 Landscape presisi tinggi...', 'info');
 
   let wrapper = null;
 
@@ -1280,7 +1295,7 @@ async function downloadReportPdf() {
     wrapper.style.position = 'fixed';
     wrapper.style.top = '0';
     wrapper.style.left = '0';
-    wrapper.style.width = '1120px';
+    wrapper.style.width = '1000px';
     wrapper.style.backgroundColor = '#ffffff';
     wrapper.style.zIndex = '999999';
     wrapper.style.opacity = '1';
@@ -1295,7 +1310,7 @@ async function downloadReportPdf() {
     if (typeof html2pdf !== 'undefined') {
       const filename = `Laporan_Rekapitulasi_Kas_Bengkel_${new Date().toISOString().split('T')[0]}.pdf`;
       const opt = {
-        margin: [6, 6, 6, 6],
+        margin: [5, 5, 5, 5],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
@@ -1304,7 +1319,7 @@ async function downloadReportPdf() {
           logging: false,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: 1150
+          windowWidth: 1020
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }

@@ -102,12 +102,18 @@ table {
 
 /* Print Styling */
 @media print {
+  @page {
+    size: A4 landscape;
+    margin: 6mm;
+  }
   body {
     background: #ffffff !important;
     color: #000000 !important;
-    font-size: 11pt;
+    font-size: 8.5pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  header, nav, .no-print, button, .filter-section, #btnExportXLSX, #btnPrintReport {
+  header, nav, .no-print, button, .filter-section, #btnExportXLSX, #btnPrintReport, #toastContainer, #loadingOverlay {
     display: none !important;
   }
   .print-only {
@@ -123,6 +129,7 @@ table {
   table {
     page-break-inside: auto;
     width: 100% !important;
+    table-layout: fixed !important;
   }
   tr {
     page-break-inside: avoid;
