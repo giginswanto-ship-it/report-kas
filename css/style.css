@@ -110,7 +110,7 @@ table {
     background: #ffffff !important;
     color: #000000 !important;
     font-size: 8.5pt;
-    margin: 0 auto !important;
+    margin: 0 !important;
     padding: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -144,7 +144,8 @@ table {
     max-width: 100% !important;
     min-width: 100% !important;
     min-height: auto !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .print-only {
     display: block !important;
@@ -152,7 +153,7 @@ table {
   .print-container, #tempPdfReportContainer {
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
@@ -161,7 +162,7 @@ table {
     page-break-inside: auto;
     width: 100% !important;
     table-layout: fixed !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
   }
   tr {
     page-break-inside: avoid;
