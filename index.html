@@ -167,97 +167,109 @@
     </section>
 
     <!-- EXECUTIVE KPI METRICS CARDS -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-3.5">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-3.5 items-stretch">
       
       <!-- Card 1: JUMLAH FISIK RIIL (UANG FISIK DI LACI) -->
-      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg relative overflow-hidden border border-emerald-500/40 ring-1 ring-emerald-500/20 flex flex-col justify-between">
+      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white rounded-2xl p-3.5 shadow-lg relative overflow-hidden border border-emerald-500/40 ring-1 ring-emerald-500/20 flex flex-col justify-between">
         <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-emerald-400/10 rounded-full pointer-events-none"></div>
         <div>
-          <div class="flex justify-between items-start mb-2">
+          <div class="flex justify-between items-start mb-1">
             <div>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5">
                 <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300">Jumlah Fisik Riil (Uang Laci)</span>
-                <span class="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-bold border border-emerald-400/40">Kas Fisik</span>
+                <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/30 text-emerald-300 text-[9px] font-bold border border-emerald-400/40">Kas Fisik</span>
               </div>
-              <div class="text-2xl sm:text-3xl font-black mt-1 text-white tracking-tight" id="kpiFisikRiil">Rp 0</div>
+              <div class="text-xl sm:text-2xl font-black mt-0.5 text-white tracking-tight" id="kpiFisikRiil">Rp 0</div>
             </div>
-            <div class="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xl border border-emerald-400/40 shadow-inner">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-base border border-emerald-400/40 shadow-inner shrink-0">
               <i class="fa-solid fa-money-bill-wave"></i>
             </div>
           </div>
         </div>
-        <div class="mt-3 pt-3 border-t border-white/15 flex justify-between items-center text-[11px]">
-          <div>
-            <span class="text-slate-300 font-medium">Sisa Kas Buku:</span>
-            <span id="kpiSisaKas" class="font-bold text-white ml-1">Rp 0</span>
+
+        <div class="mt-2 pt-2 border-t border-white/15 space-y-1.5 text-[10px]">
+          <div class="flex justify-between items-center bg-black/30 px-2 py-1 rounded-lg border border-white/10">
+            <span class="text-amber-300 font-bold flex items-center gap-1 truncate">
+              <i class="fa-regular fa-clock text-[9px]"></i> Belum Diambil: <strong id="kpiKasBelumDiambil" class="text-amber-200 ml-0.5">Rp 0</strong>
+            </span>
+            <span id="kpiCountBelumDiambil" class="text-[9px] text-amber-200/90 font-semibold whitespace-nowrap ml-1">0 Shift</span>
           </div>
-          <div>
-            <span class="text-slate-300 font-medium">Total Bon Ops:</span>
-            <span id="kpiBiayaOpsAlt" class="font-bold text-rose-300 ml-1">Rp 0</span>
+          <div class="flex justify-between items-center text-slate-300 px-0.5 text-[10px]">
+            <span>Sisa Kas Buku: <strong id="kpiSisaKas" class="text-white">Rp 0</strong></span>
+            <span>Bon Ops: <strong id="kpiBiayaOpsAlt" class="text-rose-300">Rp 0</strong></span>
           </div>
         </div>
       </div>
 
       <!-- Card 2: Total Omset Keseluruhan -->
-      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-blue-950 via-indigo-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg relative overflow-hidden border border-blue-500/40 ring-1 ring-blue-500/20 flex flex-col justify-between">
+      <div class="kpi-card sm:col-span-2 lg:col-span-2 xl:col-span-2 bg-gradient-to-br from-blue-950 via-indigo-900 to-slate-900 text-white rounded-2xl p-3.5 shadow-lg relative overflow-hidden border border-blue-500/40 ring-1 ring-blue-500/20 flex flex-col justify-between">
         <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-blue-400/10 rounded-full pointer-events-none"></div>
         <div>
-          <div class="flex justify-between items-start mb-2">
+          <div class="flex justify-between items-start mb-1">
             <div>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5">
                 <span class="text-[11px] font-extrabold uppercase tracking-wider text-blue-200">Total Pemasukan (Omset)</span>
-                <span class="px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-200 text-[10px] font-bold border border-blue-400/40">Total</span>
+                <span class="px-1.5 py-0.2 rounded-full bg-blue-500/30 text-blue-200 text-[9px] font-bold border border-blue-400/40">Total</span>
               </div>
-              <div class="text-2xl sm:text-3xl font-black mt-1 text-white tracking-tight" id="kpiTotalOmset">Rp 0</div>
+              <div class="text-xl sm:text-2xl font-black mt-0.5 text-white tracking-tight" id="kpiTotalOmset">Rp 0</div>
             </div>
-            <div class="w-11 h-11 rounded-2xl bg-blue-500/20 text-amber-300 flex items-center justify-center text-xl border border-blue-400/40 shadow-inner">
+            <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-amber-300 flex items-center justify-center text-base border border-blue-400/40 shadow-inner shrink-0">
               <i class="fa-solid fa-wallet"></i>
             </div>
           </div>
         </div>
-        <div class="mt-3 pt-3 border-t border-white/15 grid grid-cols-2 gap-2 text-[11px]">
-          <div>
-            <span class="text-amber-300 font-semibold block">Shop & Drive</span>
-            <span id="kpiPorsiShopDrive" class="font-bold text-white">Rp 0 (0%)</span>
-          </div>
-          <div>
-            <span class="text-emerald-300 font-semibold block">Bima Motor</span>
-            <span id="kpiPorsiBimaMotor" class="font-bold text-white">Rp 0 (0%)</span>
+
+        <div class="mt-2 pt-2 border-t border-white/15 space-y-1.5 text-[10px]">
+          <div class="grid grid-cols-2 gap-1.5">
+            <div class="bg-black/30 px-2 py-1 rounded-lg border border-white/10 truncate">
+              <span class="text-amber-300 font-semibold block text-[9px]">Shop & Drive</span>
+              <span id="kpiPorsiShopDrive" class="font-bold text-white text-[10px] truncate block">Rp 0 (0%)</span>
+            </div>
+            <div class="bg-black/30 px-2 py-1 rounded-lg border border-white/10 truncate">
+              <span class="text-emerald-300 font-semibold block text-[9px]">Bima Motor</span>
+              <span id="kpiPorsiBimaMotor" class="font-bold text-white text-[10px] truncate block">Rp 0 (0%)</span>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Card 3: Transfer Bank Mandiri -->
-      <div class="kpi-card bg-gradient-to-br from-sky-950 via-cyan-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg border border-sky-500/40 ring-1 ring-sky-500/20 flex flex-col justify-between relative overflow-hidden">
+      <div class="kpi-card bg-gradient-to-br from-sky-950 via-cyan-900 to-slate-900 text-white rounded-2xl p-3.5 shadow-lg border border-sky-500/40 ring-1 ring-sky-500/20 flex flex-col justify-between relative overflow-hidden">
         <div class="absolute -right-3 -bottom-3 w-16 h-16 bg-sky-400/10 rounded-full pointer-events-none"></div>
         <div>
-          <div class="flex justify-between items-center mb-1.5">
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-sky-300">Trf Mandiri</span>
-            <span class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30 flex items-center justify-center text-xs shadow-inner">
+          <div class="flex justify-between items-start mb-1">
+            <div class="truncate pr-1">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-sky-300 block truncate">Trf Mandiri</span>
+              <span class="text-[8.5px] text-sky-200/80 font-bold block truncate" title="PT DUTARAYA BERJAYA">PT DUTARAYA BERJAYA</span>
+            </div>
+            <span class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30 flex items-center justify-center text-xs shadow-inner shrink-0">
               <i class="fa-solid fa-building-columns"></i>
             </span>
           </div>
-          <div class="text-lg sm:text-xl font-black text-white tracking-tight mt-1" id="kpiTransferMandiri">Rp 0</div>
+          <div class="text-lg font-black text-white tracking-tight mt-0.5" id="kpiTransferMandiri">Rp 0</div>
         </div>
-        <div class="mt-3 pt-2 border-t border-white/10 text-[10px] text-sky-200/90 font-bold flex items-center gap-1">
-          <i class="fa-solid fa-arrow-right-arrow-left text-[9px] text-sky-300"></i> Transfer Bank
+        <div class="mt-2 pt-2 border-t border-white/10 text-[9.5px] text-sky-200/90 font-bold flex items-center gap-1 truncate" title="Rekening Mandiri PT DUTARAYA BERJAYA">
+          <i class="fa-solid fa-building-columns text-[9px] text-sky-300 shrink-0"></i> <span class="truncate">Rek. Mandiri</span>
         </div>
       </div>
 
       <!-- Card 4: Card / EDC -->
-      <div class="kpi-card bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg border border-indigo-500/40 ring-1 ring-indigo-500/20 flex flex-col justify-between relative overflow-hidden">
+      <div class="kpi-card bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 text-white rounded-2xl p-3.5 shadow-lg border border-indigo-500/40 ring-1 ring-indigo-500/20 flex flex-col justify-between relative overflow-hidden">
         <div class="absolute -right-3 -bottom-3 w-16 h-16 bg-indigo-400/10 rounded-full pointer-events-none"></div>
         <div>
-          <div class="flex justify-between items-center mb-1.5">
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-300">Card / EDC</span>
-            <span class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 flex items-center justify-center text-xs shadow-inner">
+          <div class="flex justify-between items-start mb-1">
+            <div class="truncate pr-1">
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-300 block truncate">Card / EDC</span>
+              <span class="text-[8.5px] text-indigo-200/80 font-bold block truncate" title="PT DUTARAYA BERJAYA">PT DUTARAYA BERJAYA</span>
+            </div>
+            <span class="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 flex items-center justify-center text-xs shadow-inner shrink-0">
               <i class="fa-solid fa-credit-card"></i>
             </span>
           </div>
-          <div class="text-lg sm:text-xl font-black text-white tracking-tight mt-1" id="kpiCardEdc">Rp 0</div>
+          <div class="text-lg font-black text-white tracking-tight mt-0.5" id="kpiCardEdc">Rp 0</div>
         </div>
-        <div class="mt-3 pt-2 border-t border-white/10 text-[10px] text-indigo-200/90 font-bold flex items-center gap-1">
-          <i class="fa-solid fa-credit-card text-[9px] text-indigo-300"></i> Debit & Kredit
+        <div class="mt-2 pt-2 border-t border-white/10 text-[9.5px] text-indigo-200/90 font-bold flex items-center gap-1 truncate" title="Rekening Mandiri PT DUTARAYA BERJAYA (Debit & Kredit EDC)">
+          <i class="fa-solid fa-credit-card text-[9px] text-indigo-300 shrink-0"></i> <span class="truncate">Debit & Kredit</span>
         </div>
       </div>
 
@@ -265,32 +277,38 @@
       <div class="kpi-card bg-gradient-to-br from-fuchsia-950 via-pink-900 to-slate-900 text-white rounded-2xl p-4 shadow-lg border border-fuchsia-500/40 ring-1 ring-fuchsia-500/20 flex flex-col justify-between relative overflow-hidden">
         <div class="absolute -right-3 -bottom-3 w-16 h-16 bg-fuchsia-400/10 rounded-full pointer-events-none"></div>
         <div>
-          <div class="flex justify-between items-center mb-1.5">
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-fuchsia-300">Voucher / Tr-In</span>
-            <span class="w-8 h-8 rounded-xl bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-400/30 flex items-center justify-center text-xs shadow-inner">
+          <div class="flex justify-between items-start mb-1">
+            <div>
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-fuchsia-300 block">Voucher / Tr-In</span>
+              <span class="text-[8.5px] text-fuchsia-200/80 font-bold block">Trade In Aki</span>
+            </div>
+            <span class="w-8 h-8 rounded-xl bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-400/30 flex items-center justify-center text-xs shadow-inner shrink-0">
               <i class="fa-solid fa-tags"></i>
             </span>
           </div>
-          <div class="text-lg sm:text-xl font-black text-white tracking-tight mt-1" id="kpiTradeIn">Rp 0</div>
+          <div class="text-lg font-black text-white tracking-tight mt-0.5" id="kpiTradeIn">Rp 0</div>
         </div>
-        <div class="mt-3 pt-2 border-t border-white/10 text-[10px] text-fuchsia-200/90 font-bold flex items-center gap-1">
-          <i class="fa-solid fa-recycle text-[9px] text-fuchsia-300"></i> Diskon Aki / Promo
+        <div class="mt-2 pt-2 border-t border-white/10 text-[9.5px] text-fuchsia-200/90 font-bold flex items-center gap-1 truncate">
+          <i class="fa-solid fa-recycle text-[9px] text-fuchsia-300 shrink-0"></i> <span class="truncate">Diskon Aki / Promo</span>
         </div>
       </div>
 
       <!-- Card 6: Selisih & Akurasi -->
-      <div class="kpi-card bg-gradient-to-br from-slate-900 via-gray-900 to-slate-950 text-white rounded-2xl p-4 shadow-lg border border-slate-700/80 ring-1 ring-slate-600/30 flex flex-col justify-between relative overflow-hidden">
+      <div class="kpi-card bg-gradient-to-br from-slate-900 via-gray-900 to-slate-950 text-white rounded-2xl p-3.5 shadow-lg border border-slate-700/80 ring-1 ring-slate-600/30 flex flex-col justify-between relative overflow-hidden">
         <div class="absolute -right-3 -bottom-3 w-16 h-16 bg-white/5 rounded-full pointer-events-none"></div>
         <div>
-          <div class="flex justify-between items-center mb-1.5">
-            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300">Audit Selisih</span>
-            <span class="w-8 h-8 rounded-xl bg-slate-800 text-emerald-400 border border-slate-700 flex items-center justify-center text-xs shadow-inner">
+          <div class="flex justify-between items-start mb-1">
+            <div>
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-300 block">Audit Selisih</span>
+              <span class="text-[8.5px] text-slate-400 font-bold block">Akurasi Kas</span>
+            </div>
+            <span class="w-8 h-8 rounded-xl bg-slate-800 text-emerald-400 border border-slate-700 flex items-center justify-center text-xs shadow-inner shrink-0">
               <i class="fa-solid fa-scale-balanced"></i>
             </span>
           </div>
-          <div class="text-lg sm:text-xl font-black text-emerald-400 tracking-tight mt-1" id="kpiSelisih">Rp 0</div>
+          <div class="text-lg font-black text-emerald-400 tracking-tight mt-0.5" id="kpiSelisih">Rp 0</div>
         </div>
-        <div class="mt-3 pt-2 border-t border-white/10 text-[10px] text-slate-300 font-bold truncate" id="kpiAccuracyBadge">
+        <div class="mt-2 pt-2 border-t border-white/10 text-[9.5px] text-slate-300 font-bold truncate" id="kpiAccuracyBadge">
           100% Pas
         </div>
       </div>
@@ -519,7 +537,7 @@
         <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
           <span class="font-black text-slate-700 uppercase tracking-wider text-[10px] block">Potongan Non-Tunai & Biaya Ops</span>
           <div class="flex justify-between items-center">
-            <span class="text-slate-600">Transfer Bank Mandiri:</span>
+            <span class="text-slate-600">Transfer Mandiri (PT DUTARAYA BERJAYA):</span>
             <span class="font-bold text-slate-800" id="modalTransferMandiri">Rp 0</span>
           </div>
           <div class="flex justify-between items-center">

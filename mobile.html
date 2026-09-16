@@ -66,6 +66,20 @@
       </div>
       <div class="text-2xl font-black text-white tracking-tight" id="mKpiFisikRiil">Rp 0</div>
       
+      <!-- Highlight Kas Belum Diambil vs Sudah Diambil -->
+      <div class="mt-2 p-1.5 rounded-xl bg-black/30 border border-white/10 grid grid-cols-2 gap-2 text-[10px]">
+        <div class="bg-amber-950/40 border border-amber-500/30 rounded-lg p-1">
+          <span class="text-amber-300 font-bold block">⏳ Belum Diambil:</span>
+          <span id="mKpiKasBelumDiambil" class="font-black text-amber-300 text-[11px]">Rp 0</span>
+          <span id="mKpiCountBelumDiambil" class="text-[8px] text-amber-200/80 block">0 Shift</span>
+        </div>
+        <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-lg p-1">
+          <span class="text-emerald-300 font-bold block">✓ Sudah Diambil:</span>
+          <span id="mKpiKasSudahDiambil" class="font-black text-emerald-300 text-[11px]">Rp 0</span>
+          <span id="mKpiCountSudahDiambil" class="text-[8px] text-emerald-200/80 block">0 Shift</span>
+        </div>
+      </div>
+
       <div class="mt-2 pt-2 border-t border-white/10 flex justify-between items-center text-[10px] text-slate-300">
         <div>Sisa Buku: <span id="mKpiSisaKas" class="font-bold text-white">Rp 0</span></div>
         <div>Audit: <span id="mKpiSelisih" class="font-bold text-emerald-400">Rp 0</span></div>
@@ -114,10 +128,12 @@
       <div class="grid grid-cols-3 gap-2">
         <div class="bg-gradient-to-br from-sky-950 via-cyan-900 to-slate-900 border border-sky-500/30 text-white p-2 rounded-2xl text-center shadow-xs">
           <span class="text-[9px] font-extrabold uppercase text-sky-300 block">Trf Mandiri</span>
+          <span class="text-[7.5px] text-sky-200/70 block truncate font-medium">PT DUTARAYA BERJAYA</span>
           <span class="text-xs font-black text-sky-200 block mt-0.5" id="mKpiMandiri">Rp 0</span>
         </div>
         <div class="bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 border border-indigo-500/30 text-white p-2 rounded-2xl text-center shadow-xs">
           <span class="text-[9px] font-extrabold uppercase text-indigo-300 block">Card / EDC</span>
+          <span class="text-[7.5px] text-indigo-200/70 block truncate font-medium">PT DUTARAYA BERJAYA</span>
           <span class="text-xs font-black text-indigo-200 block mt-0.5" id="mKpiEdc">Rp 0</span>
         </div>
         <div class="bg-gradient-to-br from-fuchsia-950 via-pink-900 to-slate-900 border border-fuchsia-500/30 text-white p-2 rounded-2xl text-center shadow-xs">
@@ -223,7 +239,7 @@
       <!-- Potongan -->
       <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-1.5">
         <span class="text-[10px] font-black uppercase text-slate-400 block">Potongan Non-Tunai & Bon</span>
-        <div class="flex justify-between"><span>Transfer Mandiri:</span><span class="font-bold" id="drwMandiri">Rp 0</span></div>
+        <div class="flex justify-between"><span>Trf Mandiri (PT DUTARAYA BERJAYA):</span><span class="font-bold" id="drwMandiri">Rp 0</span></div>
         <div class="flex justify-between"><span>Card EDC:</span><span class="font-bold" id="drwEdc">Rp 0</span></div>
         <div class="flex justify-between"><span>Trade In:</span><span class="font-bold" id="drwTradeIn">Rp 0</span></div>
         <div class="flex justify-between"><span>Biaya Bon Ops:</span><span class="font-bold text-rose-600" id="drwBiayaOps">Rp 0</span></div>

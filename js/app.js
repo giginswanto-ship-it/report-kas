@@ -361,6 +361,10 @@ function renderKpiCards() {
   let sumPengeluaranKas = 0;
   let sumSisaKas = 0;
   let sumFisikRiil = 0;
+  let sumFisikBelumDiambil = 0;
+  let countBelumDiambil = 0;
+  let sumFisikSudahDiambil = 0;
+  let countSudahDiambil = 0;
   let sumSelisih = 0;
   let pasCount = 0;
 
@@ -375,7 +379,19 @@ function renderKpiCards() {
     sumBiayaOps += Number(r.biayaOperasional) || 0;
     sumPengeluaranKas += Number(r.totalPengeluaranKas) || 0;
     sumSisaKas += Number(r.sisaUangKasKecil) || 0;
-    sumFisikRiil += Number(r.fisikRiil) || 0;
+    const fisik = Number(r.fisikRiil) || 0;
+    sumFisikRiil += fisik;
+    
+    // Track Cash Taken vs Not Taken
+    const isTaken = isRecordCashTaken(r);
+    if (isTaken) {
+      sumFisikSudahDiambil += fisik;
+      countSudahDiambil++;
+    } else {
+      sumFisikBelumDiambil += fisik;
+      countBelumDiambil++;
+    }
+
     const diff = Number(r.selisih) || 0;
     sumSelisih += diff;
     if (diff === 0) pasCount++;
@@ -407,6 +423,10 @@ function renderKpiCards() {
   setElText('kpiPengeluaranKas', utils.formatRupiah(sumPengeluaranKas));
   setElText('kpiSisaKas', utils.formatRupiah(sumSisaKas));
   setElText('kpiFisikRiil', utils.formatRupiah(sumFisikRiil));
+  setElText('kpiKasBelumDiambil', utils.formatRupiah(sumFisikBelumDiambil));
+  setElText('kpiCountBelumDiambil', `${countBelumDiambil} Shift Belum`);
+  setElText('kpiKasSudahDiambil', utils.formatRupiah(sumFisikSudahDiambil));
+  setElText('kpiCountSudahDiambil', `${countSudahDiambil} Shift Diambil`);
   renderTableFooter(sumShopDrive, sumBimaMotor, sumTotalOmset, sumMandiri, sumCardEdc, sumTradeIn, sumBiayaOps, sumSisaKas, sumFisikRiil, sumSelisih);
   setElText('kpiAvgDaily', utils.formatRupiah(avgDaily));
 
@@ -1154,7 +1174,7 @@ function buildPrintableReportElement() {
         <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569;">Rincian Non-Tunai</div>
         <div style="font-size: 14px; font-weight: 900; color: #2563eb; margin-top: 2px;">${utils.formatRupiah(nonTunaiTotal)}</div>
         <div style="font-size: 8.5px; color: #64748b; margin-top: 2px; line-height: 1.3;">
-          Mandiri: <strong>${utils.formatRupiah(sumMandiri)}</strong> | EDC: <strong>${utils.formatRupiah(sumCardEdc)}</strong><br>
+          Mandiri (PT DUTARAYA BERJAYA): <strong>${utils.formatRupiah(sumMandiri)}</strong> | EDC: <strong>${utils.formatRupiah(sumCardEdc)}</strong><br>
           Voucher/Tr-In: <strong>${utils.formatRupiah(sumTradeIn)}</strong> | Bon: <strong style="color: #be123c;">${utils.formatRupiah(sumBiayaOps)}</strong>
         </div>
       </div>

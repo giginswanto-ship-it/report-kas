@@ -200,6 +200,10 @@ function renderMobileView() {
 
 function renderMobileKpi() {
   let sumFisik = 0;
+  let sumFisikBelumDiambil = 0;
+  let countBelumDiambil = 0;
+  let sumFisikSudahDiambil = 0;
+  let countSudahDiambil = 0;
   let sumOmset = 0;
   let sumSD = 0;
   let sumBM = 0;
@@ -220,7 +224,18 @@ function renderMobileKpi() {
     sumTradeIn += Number(r.penghematanTradeIn) || 0;
     sumOps += Number(r.biayaOperasional) || 0;
     sumSisa += Number(r.sisaUangKasKecil) || 0;
-    sumFisik += Number(r.fisikRiil) || 0;
+    const fisik = Number(r.fisikRiil) || 0;
+    sumFisik += fisik;
+
+    const isTaken = isRecordCashTaken(r);
+    if (isTaken) {
+      sumFisikSudahDiambil += fisik;
+      countSudahDiambil++;
+    } else {
+      sumFisikBelumDiambil += fisik;
+      countBelumDiambil++;
+    }
+
     sumSelisih += Number(r.selisih) || 0;
   });
 
@@ -229,16 +244,20 @@ function renderMobileKpi() {
 
   // Header & Top Cards
   setEl('mKpiFisikRiil', mUtils.formatRupiah(sumFisik));
+  setEl('mKpiKasBelumDiambil', mUtils.formatRupiah(sumFisikBelumDiambil));
+  setEl('mKpiCountBelumDiambil', `${countBelumDiambil} Shift`);
+  setEl('mKpiKasSudahDiambil', mUtils.formatRupiah(sumFisikSudahDiambil));
+  setEl('mKpiCountSudahDiambil', `${countSudahDiambil} Shift`);
   setEl('mKpiSisaKas', mUtils.formatRupiah(sumSisa));
   setEl('mKpiTotalOmset', mUtils.formatRupiah(sumOmset));
-  setEl('mKpiShopDrive', mUtils.formatRupiah(sumSD));
-  setEl('mKpiPorsiSD', pSD + '%');
-  setEl('mKpiBimaMotor', mUtils.formatRupiah(sumBM));
-  setEl('mKpiPorsiBM', pBM + '%');
-  setEl('mKpiMandiri', mUtils.formatRupiah(sumMandiri));
-  setEl('mKpiEdc', mUtils.formatRupiah(sumEdc));
-  setEl('mKpiTradeIn', mUtils.formatRupiah(sumTradeIn));
-  setEl('mKpiBiayaOps', mUtils.formatRupiah(sumOps));
+  setElTextSafe('mKpiShopDrive', mUtils.formatRupiah(sumSD));
+  setElTextSafe('mKpiPorsiSD', pSD + '%');
+  setElTextSafe('mKpiBimaMotor', mUtils.formatRupiah(sumBM));
+  setElTextSafe('mKpiPorsiBM', pBM + '%');
+  setElTextSafe('mKpiMandiri', mUtils.formatRupiah(sumMandiri));
+  setElTextSafe('mKpiEdc', mUtils.formatRupiah(sumEdc));
+  setElTextSafe('mKpiTradeIn', mUtils.formatRupiah(sumTradeIn));
+  setElTextSafe('mKpiBiayaOps', mUtils.formatRupiah(sumOps));
 
   const selisihEl = document.getElementById('mKpiSelisih');
   if (selisihEl) {
@@ -249,6 +268,11 @@ function renderMobileKpi() {
   }
 
   setEl('mRecordCount', mState.filteredRecords.length + ' Transaksi');
+}
+
+function setElTextSafe(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = val;
 }
 
 function renderMobileCards() {
