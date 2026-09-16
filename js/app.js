@@ -1039,13 +1039,14 @@ function printReport() {
 function buildPrintableReportElement() {
   const container = document.createElement('div');
   container.id = 'tempPdfReportContainer';
-  container.style.width = '1000px';
-  container.style.maxWidth = '1000px';
-  container.style.padding = '14px 18px';
+  container.style.width = '1040px';
+  container.style.maxWidth = '1040px';
+  container.style.margin = '0 auto';
+  container.style.padding = '12px 14px';
   container.style.background = '#ffffff';
   container.style.color = '#0f172a';
   container.style.fontFamily = "'Plus Jakarta Sans', Arial, sans-serif";
-  container.style.fontSize = '9px';
+  container.style.fontSize = '8.5px';
   container.style.lineHeight = '1.3';
   container.style.boxSizing = 'border-box';
 
@@ -1295,12 +1296,13 @@ async function downloadReportPdf() {
     wrapper.style.position = 'fixed';
     wrapper.style.top = '0';
     wrapper.style.left = '0';
-    wrapper.style.width = '1000px';
+    wrapper.style.width = '1040px';
     wrapper.style.backgroundColor = '#ffffff';
     wrapper.style.zIndex = '999999';
     wrapper.style.opacity = '1';
     wrapper.style.visibility = 'visible';
     wrapper.style.overflow = 'visible';
+    wrapper.style.margin = '0 auto';
     wrapper.appendChild(reportElement);
     document.body.appendChild(wrapper);
 
@@ -1310,7 +1312,7 @@ async function downloadReportPdf() {
     if (typeof html2pdf !== 'undefined') {
       const filename = `Laporan_Rekapitulasi_Kas_Bengkel_${new Date().toISOString().split('T')[0]}.pdf`;
       const opt = {
-        margin: [5, 5, 5, 5],
+        margin: [10, 8, 10, 8],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
@@ -1319,7 +1321,7 @@ async function downloadReportPdf() {
           logging: false,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: 1020
+          windowWidth: 1040
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
