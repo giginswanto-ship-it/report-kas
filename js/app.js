@@ -1339,23 +1339,43 @@ async function downloadReportPdfDirect() {
     return;
   }
 
-  const sheet = document.getElementById('pdfPreviewSheet');
-  const reportElement = sheet?.firstElementChild || buildPrintableReportElement();
-
   showLoading(true);
   showToast('Sedang membuat berkas PDF A4 Landscape presisi...', 'info');
 
-  const prevZoom = currentPdfZoom;
-  const zoomWrapper = document.getElementById('pdfPreviewZoomWrapper');
-  if (zoomWrapper) zoomWrapper.style.transform = 'scale(1)';
+  let sandbox = null;
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Generate fresh standalone report element
+    const reportElement = buildPrintableReportElement();
+
+    // Create a dedicated top-left zero-offset container attached to body for html2canvas
+    sandbox = document.createElement('div');
+    sandbox.id = 'pdfIsolatedRenderSandbox';
+    sandbox.style.position = 'fixed';
+    sandbox.style.top = '0px';
+    sandbox.style.left = '0px';
+    sandbox.style.width = '1040px';
+    sandbox.style.minWidth = '1040px';
+    sandbox.style.maxWidth = '1040px';
+    sandbox.style.margin = '0';
+    sandbox.style.padding = '0';
+    sandbox.style.backgroundColor = '#ffffff';
+    sandbox.style.zIndex = '9999999';
+    sandbox.style.opacity = '1';
+    sandbox.style.visibility = 'visible';
+    sandbox.style.boxSizing = 'border-box';
+    sandbox.style.overflow = 'visible';
+
+    sandbox.appendChild(reportElement);
+    document.body.appendChild(sandbox);
+
+    // Wait briefly for full font and DOM rendering
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     if (typeof html2pdf !== 'undefined') {
       const filename = `Laporan_Rekapitulasi_Kas_Bengkel_${new Date().toISOString().split('T')[0]}.pdf`;
       const opt = {
-        margin: [8, 6, 8, 6],
+        margin: [6, 6, 6, 6],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
@@ -1364,13 +1384,16 @@ async function downloadReportPdfDirect() {
           logging: false,
           scrollX: 0,
           scrollY: 0,
-          windowWidth: 1040
+          x: 0,
+          y: 0,
+          windowWidth: 1040,
+          width: 1040
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      await html2pdf().set(opt).from(reportElement).save();
+      await html2pdf().set(opt).from(sandbox).save();
       showToast('✓ Laporan PDF berhasil dibuat dan diunduh ke komputer Anda!', 'success');
       closePdfPreviewModal();
     } else {
@@ -1383,7 +1406,9 @@ async function downloadReportPdfDirect() {
     showToast('Membuka dialog cetak browser untuk menyimpan PDF...', 'info');
     window.print();
   } finally {
-    if (zoomWrapper) zoomWrapper.style.transform = `scale(${prevZoom})`;
+    if (sandbox && sandbox.parentNode) {
+      sandbox.parentNode.removeChild(sandbox);
+    }
     showLoading(false);
   }
 }
