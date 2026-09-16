@@ -1203,7 +1203,7 @@ function buildPrintableReportElement() {
       <colgroup>
         <col style="width: 8.0%;">
         <col style="width: 9.0%;">
-        <col style="width: 8.5%;">
+        <col style="width: 8.0%;">
         <col style="width: 8.0%;">
         <col style="width: 9.0%;">
         <col style="width: 8.5%;">
@@ -1213,7 +1213,7 @@ function buildPrintableReportElement() {
         <col style="width: 8.0%;">
         <col style="width: 8.5%;">
         <col style="width: 5.5%;">
-        <col style="width: 4.0%;">
+        <col style="width: 4.5%;">
       </colgroup>
       <thead>
         <tr style="background: #0f172a; color: #ffffff; text-align: left;">
@@ -1276,43 +1276,86 @@ function buildPrintableReportElement() {
   return container;
 }
 
-async function downloadReportPdf() {
+// ==========================================
+// --- PDF PREVIEW & EXPORT HANDLERS ---
+// ==========================================
+let currentPdfZoom = 1.0;
+
+function updatePdfPreviewZoom(zoom) {
+  currentPdfZoom = Math.min(Math.max(zoom, 0.4), 1.6);
+  const wrapper = document.getElementById('pdfPreviewZoomWrapper');
+  const label = document.getElementById('pdfZoomLevel');
+  if (wrapper) {
+    wrapper.style.transform = `scale(${currentPdfZoom})`;
+    wrapper.style.transformOrigin = 'top center';
+  }
+  if (label) {
+    label.textContent = `${Math.round(currentPdfZoom * 100)}%`;
+  }
+}
+
+function openPdfPreviewModal() {
   if (state.filteredRecords.length === 0) {
     showToast('Tidak ada data rekapitulasi untuk diunduh!', 'warning');
     return;
   }
 
-  showLoading(true);
-  showToast('Sedang menyusun Laporan PDF A4 Landscape presisi tinggi...', 'info');
+  const modal = document.getElementById('pdfPreviewModal');
+  const sheet = document.getElementById('pdfPreviewSheet');
+  if (!modal || !sheet) {
+    // Fallback if modal not present
+    downloadReportPdfDirect();
+    return;
+  }
 
-  let wrapper = null;
+  // Generate fresh printable report element
+  const reportElement = buildPrintableReportElement();
+  sheet.innerHTML = '';
+  sheet.appendChild(reportElement);
+
+  // Responsive default zoom
+  const screenWidth = window.innerWidth;
+  if (screenWidth < 640) {
+    updatePdfPreviewZoom(0.48);
+  } else if (screenWidth < 1024) {
+    updatePdfPreviewZoom(0.72);
+  } else if (screenWidth < 1280) {
+    updatePdfPreviewZoom(0.88);
+  } else {
+    updatePdfPreviewZoom(1.0);
+  }
+
+  modal.classList.remove('hidden');
+}
+
+function closePdfPreviewModal() {
+  const modal = document.getElementById('pdfPreviewModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+async function downloadReportPdfDirect() {
+  if (state.filteredRecords.length === 0) {
+    showToast('Tidak ada data rekapitulasi untuk diunduh!', 'warning');
+    return;
+  }
+
+  const sheet = document.getElementById('pdfPreviewSheet');
+  const reportElement = sheet?.firstElementChild || buildPrintableReportElement();
+
+  showLoading(true);
+  showToast('Sedang membuat berkas PDF A4 Landscape presisi...', 'info');
+
+  const prevZoom = currentPdfZoom;
+  const zoomWrapper = document.getElementById('pdfPreviewZoomWrapper');
+  if (zoomWrapper) zoomWrapper.style.transform = 'scale(1)';
 
   try {
-    const reportElement = buildPrintableReportElement();
-
-    // Create a temporary container in DOM for html2canvas to render accurately without offset bugs
-    wrapper = document.createElement('div');
-    wrapper.id = 'tempPdfRenderWrapper';
-    wrapper.style.position = 'fixed';
-    wrapper.style.top = '0';
-    wrapper.style.left = '0';
-    wrapper.style.width = '1040px';
-    wrapper.style.backgroundColor = '#ffffff';
-    wrapper.style.zIndex = '999999';
-    wrapper.style.opacity = '1';
-    wrapper.style.visibility = 'visible';
-    wrapper.style.overflow = 'visible';
-    wrapper.style.margin = '0 auto';
-    wrapper.appendChild(reportElement);
-    document.body.appendChild(wrapper);
-
-    // Give DOM a moment to ensure fonts and layout dimensions are fully calculated
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     if (typeof html2pdf !== 'undefined') {
       const filename = `Laporan_Rekapitulasi_Kas_Bengkel_${new Date().toISOString().split('T')[0]}.pdf`;
       const opt = {
-        margin: [10, 8, 10, 8],
+        margin: [8, 6, 8, 6],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
@@ -1329,6 +1372,7 @@ async function downloadReportPdf() {
 
       await html2pdf().set(opt).from(reportElement).save();
       showToast('✓ Laporan PDF berhasil dibuat dan diunduh ke komputer Anda!', 'success');
+      closePdfPreviewModal();
     } else {
       console.warn('html2pdf library not ready, opening browser print dialog as PDF fallback');
       showToast('Membuka dialog cetak browser (Pilih Simpan sebagai PDF)...', 'info');
@@ -1339,9 +1383,7 @@ async function downloadReportPdf() {
     showToast('Membuka dialog cetak browser untuk menyimpan PDF...', 'info');
     window.print();
   } finally {
-    if (wrapper && wrapper.parentNode) {
-      wrapper.parentNode.removeChild(wrapper);
-    }
+    if (zoomWrapper) zoomWrapper.style.transform = `scale(${prevZoom})`;
     showLoading(false);
   }
 }
@@ -1547,8 +1589,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Export & Print Buttons
   document.getElementById('btnExportExcel')?.addEventListener('click', exportRekapToExcel);
-  document.getElementById('btnPrintReport')?.addEventListener('click', printReport);
-  document.getElementById('btnDownloadPdf')?.addEventListener('click', downloadReportPdf);
+  document.getElementById('btnPrintReport')?.addEventListener('click', openPdfPreviewModal);
+  document.getElementById('btnDownloadPdf')?.addEventListener('click', openPdfPreviewModal);
+
+  // PDF Preview Modal Controls
+  document.getElementById('btnClosePdfPreview')?.addEventListener('click', closePdfPreviewModal);
+  document.getElementById('btnCancelPdfPreview')?.addEventListener('click', closePdfPreviewModal);
+  document.getElementById('btnConfirmDownloadPdf')?.addEventListener('click', downloadReportPdfDirect);
+  document.getElementById('btnDirectPrintPdf')?.addEventListener('click', () => {
+    window.print();
+  });
+  document.getElementById('btnZoomInPdf')?.addEventListener('click', () => {
+    updatePdfPreviewZoom(currentPdfZoom + 0.1);
+  });
+  document.getElementById('btnZoomOutPdf')?.addEventListener('click', () => {
+    updatePdfPreviewZoom(currentPdfZoom - 0.1);
+  });
+  document.getElementById('btnZoomResetPdf')?.addEventListener('click', () => {
+    updatePdfPreviewZoom(1.0);
+  });
 
   // Modal Close Handlers
   document.getElementById('btnCloseDetailModal')?.addEventListener('click', closeDetailModal);

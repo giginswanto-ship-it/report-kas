@@ -104,7 +104,7 @@ table {
 @media print {
   @page {
     size: A4 landscape;
-    margin: 10mm 8mm;
+    margin: 8mm 6mm;
   }
   body {
     background: #ffffff !important;
@@ -115,15 +115,43 @@ table {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  header, nav, .no-print, button, .filter-section, #btnExportXLSX, #btnPrintReport, #toastContainer, #loadingOverlay {
+  header, nav, .no-print, button, .filter-section, #btnExportXLSX, #btnPrintReport, #toastContainer, #loadingOverlay, #globalLoadingSpinner {
     display: none !important;
+  }
+  #pdfPreviewModal {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+  #pdfPreviewModal > div {
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  #pdfPreviewModal .border-b,
+  #pdfPreviewModal .border-t {
+    display: none !important;
+  }
+  #pdfPreviewZoomWrapper {
+    transform: none !important;
+  }
+  #pdfPreviewSheet {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    min-height: auto !important;
+    margin: 0 auto !important;
   }
   .print-only {
     display: block !important;
   }
   .print-container, #tempPdfReportContainer {
     width: 100% !important;
-    max-width: 1040px !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
     padding: 0 !important;
     box-shadow: none !important;
