@@ -1269,44 +1269,63 @@ async function downloadReportPdf() {
   showLoading(true);
   showToast('Sedang memproses dan menyusun Laporan PDF A4 Landscape...', 'info');
 
+  let wrapper = null;
+
   try {
     const reportElement = buildPrintableReportElement();
-    reportElement.style.position = 'fixed';
-    reportElement.style.top = '-9999px';
-    reportElement.style.left = '0';
-    document.body.appendChild(reportElement);
+
+    // Create a temporary container in DOM for html2canvas to render accurately without offset bugs
+    wrapper = document.createElement('div');
+    wrapper.id = 'tempPdfRenderWrapper';
+    wrapper.style.position = 'fixed';
+    wrapper.style.top = '0';
+    wrapper.style.left = '0';
+    wrapper.style.width = '1120px';
+    wrapper.style.backgroundColor = '#ffffff';
+    wrapper.style.zIndex = '999999';
+    wrapper.style.opacity = '1';
+    wrapper.style.visibility = 'visible';
+    wrapper.style.overflow = 'visible';
+    wrapper.appendChild(reportElement);
+    document.body.appendChild(wrapper);
+
+    // Give DOM a moment to ensure fonts and layout dimensions are fully calculated
+    await new Promise(resolve => setTimeout(resolve, 150));
 
     if (typeof html2pdf !== 'undefined') {
-      const filename = `Laporan_Rekapitulasi_Kas_${new Date().toISOString().split('T')[0]}.pdf`;
+      const filename = `Laporan_Rekapitulasi_Kas_Bengkel_${new Date().toISOString().split('T')[0]}.pdf`;
       const opt = {
-        margin: [8, 8, 8, 8],
+        margin: [6, 6, 6, 6],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true,
           logging: false,
+          scrollX: 0,
           scrollY: 0,
           windowWidth: 1150
         },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       await html2pdf().set(opt).from(reportElement).save();
-      
-      document.body.removeChild(reportElement);
-      showLoading(false);
       showToast('✓ Laporan PDF berhasil dibuat dan diunduh ke komputer Anda!', 'success');
     } else {
-      document.body.removeChild(reportElement);
-      showLoading(false);
+      console.warn('html2pdf library not ready, opening browser print dialog as PDF fallback');
+      showToast('Membuka dialog cetak browser (Pilih Simpan sebagai PDF)...', 'info');
       window.print();
     }
   } catch (err) {
     console.error('PDF generation error:', err);
-    showLoading(false);
-    showToast('Membuka jendela cetak sistem untuk menyimpan PDF...', 'info');
+    showToast('Membuka dialog cetak browser untuk menyimpan PDF...', 'info');
     window.print();
+  } finally {
+    if (wrapper && wrapper.parentNode) {
+      wrapper.parentNode.removeChild(wrapper);
+    }
+    showLoading(false);
   }
 }
 
