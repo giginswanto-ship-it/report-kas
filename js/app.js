@@ -1040,15 +1040,20 @@ function buildPrintableReportElement() {
   const container = document.createElement('div');
   container.id = 'tempPdfReportContainer';
   container.style.width = '1040px';
+  container.style.minWidth = '1040px';
   container.style.maxWidth = '1040px';
-  container.style.margin = '0 auto';
-  container.style.padding = '12px 14px';
+  container.style.margin = '0';
+  container.style.padding = '8px 10px';
   container.style.background = '#ffffff';
   container.style.color = '#0f172a';
   container.style.fontFamily = "'Plus Jakarta Sans', Arial, sans-serif";
   container.style.fontSize = '8.5px';
   container.style.lineHeight = '1.3';
   container.style.boxSizing = 'border-box';
+  container.style.display = 'block';
+  container.style.position = 'relative';
+  container.style.left = '0';
+  container.style.top = '0';
 
   // Calculate Aggregates
   let sumTotalOmset = 0;
@@ -1303,13 +1308,13 @@ function openPdfPreviewModal() {
   const modal = document.getElementById('pdfPreviewModal');
   const sheet = document.getElementById('pdfPreviewSheet');
   if (!modal || !sheet) {
-    // Fallback if modal not present
     downloadReportPdfDirect();
     return;
   }
 
   // Generate fresh printable report element
   const reportElement = buildPrintableReportElement();
+  reportElement.style.margin = '0 auto'; // Center inside preview sheet
   sheet.innerHTML = '';
   sheet.appendChild(reportElement);
 
@@ -1340,25 +1345,24 @@ async function downloadReportPdfDirect() {
   }
 
   showLoading(true);
-  showToast('Sedang memproses unduhan Laporan PDF A4 Landscape...', 'info');
+  showToast('Sedang membuat berkas PDF A4 Landscape presisi...', 'info');
 
   // Save previous scroll position
   const prevScrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
   const prevScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-
-  // Scroll to top-left to avoid html2canvas document offset/blank page bugs
-  window.scrollTo(0, 0);
 
   let sandbox = null;
 
   try {
     // Generate fresh standalone report element
     const reportElement = buildPrintableReportElement();
+    reportElement.style.margin = '0'; // Explicit 0 margin for PDF export
 
-    // Create a dedicated top-left zero-offset container attached to document body
+    // Create an isolated root container attached to documentElement to avoid any parent flex/grid/margin offsets
     sandbox = document.createElement('div');
     sandbox.id = 'pdfIsolatedRenderSandbox';
-    sandbox.style.position = 'absolute';
+    sandbox.style.all = 'initial';
+    sandbox.style.position = 'fixed';
     sandbox.style.top = '0px';
     sandbox.style.left = '0px';
     sandbox.style.width = '1040px';
@@ -1367,17 +1371,17 @@ async function downloadReportPdfDirect() {
     sandbox.style.margin = '0';
     sandbox.style.padding = '0';
     sandbox.style.backgroundColor = '#ffffff';
-    sandbox.style.zIndex = '9999999';
+    sandbox.style.zIndex = '99999999';
     sandbox.style.opacity = '1';
     sandbox.style.visibility = 'visible';
     sandbox.style.boxSizing = 'border-box';
-    sandbox.style.overflow = 'visible';
+    sandbox.style.display = 'block';
 
     sandbox.appendChild(reportElement);
-    document.body.appendChild(sandbox);
+    document.documentElement.appendChild(sandbox);
 
     // Wait briefly for full font, styles, and DOM rendering
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 250));
 
     if (typeof html2pdf !== 'undefined') {
       const filename = `Laporan_Rekapitulasi_Kas_Bengkel_${new Date().toISOString().split('T')[0]}.pdf`;
@@ -1397,7 +1401,7 @@ async function downloadReportPdfDirect() {
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      await html2pdf().set(opt).from(reportElement).save();
+      await html2pdf().set(opt).from(sandbox).save();
       showToast('✓ Laporan PDF berhasil dibuat dan diunduh ke komputer Anda!', 'success');
       closePdfPreviewModal();
     } else {
@@ -1413,7 +1417,7 @@ async function downloadReportPdfDirect() {
     if (sandbox && sandbox.parentNode) {
       sandbox.parentNode.removeChild(sandbox);
     }
-    // Restore user's previous scroll position
+    // Restore user scroll position if changed
     window.scrollTo(prevScrollX, prevScrollY);
     showLoading(false);
   }
